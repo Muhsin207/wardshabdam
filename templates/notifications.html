@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+My Notifications
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>🔔 My Notifications</h2>
+
+    {% if notifications %}
+
+        {% for n in notifications %}
+
+        <div class="card">
+
+            <h3>{{ n.title }}</h3>
+
+            <p>{{ n.message }}</p>
+
+            <small>{{ n.created_at }}</small>
+
+        </div>
+
+        <br>
+
+        {% endfor %}
+
+    {% else %}
+
+        <h3>No notifications found.</h3>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

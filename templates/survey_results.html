@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}Survey Results{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center text-primary mb-4">
+            Survey Results
+        </h2>
+
+        <h4>{{ survey.question }}</h4>
+
+        <hr>
+
+        {% for option in options %}
+
+        <div class="mb-3">
+
+            <strong>{{ option.option_text }}</strong>
+
+            <span class="float-end">
+                {{ option.votes }} votes
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,326 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <!-- Header -->
+    <div class="admin-header">
+
+        <div>
+
+            <h2>
+                <i class="fa-solid fa-gauge-high"></i>
+                Admin Dashboard
+            </h2>
+
+            <p>
+                Welcome, {{ session.admin_username }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="admin-actions">
+
+        <a href="/add_announcement" class="btn-add">
+            📢 Add Announcement
+        </a>
+
+        <a href="/add_program" class="btn-add">
+            ➕ Add Program
+        </a>
+        <a href="/citizens" class="btn-add">
+        👥 Manage Citizens
+        </a>
+        <a href="/download_pdf" class="btn-add">
+        📄 Export PDF
+        </a>
+       <a href="/admin/add-ward-member" class="btn-add">
+            ➕ Add Ward Member
+        </a>
+
+        <a href="/admin/ward-members" class="btn-add">
+            👥 Manage Ward Members
+        </a>
+
+        <a href="/admin/add-survey" class="btn-add">
+            📊 Create Survey
+        </a>
+        <a href="/admin/add-gallery" class="btn-add">
+            📷 Add Gallery
+        </a>
+        <a href="/admin/add-download" class="btn-add">
+            📂 Add Download
+        </a>
+
+        <a href="/admin/downloads" class="btn-add">
+            📑 Manage Downloads
+        </a>
+        <a href="/admin/add-circular" class="btn-add">
+        📢 Add Circular
+        </a>
+
+        <a href="/admin/circulars" class="btn-add">
+            📋 Manage Circulars
+        </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats">
+
+        <div class="card total-card">
+
+            <i class="fa-solid fa-folder"></i>
+
+            <h3>Total Complaints</h3>
+
+            <h1 style="color:red;font-size:60px;background:yellow;">
+                TOTAL = {{ total }}
+            </h1>
+
+        </div>
+
+        <div class="card pending-card">
+
+            <i class="fa-solid fa-clock"></i>
+
+            <h3>Pending</h3>
+
+            <h1 style="color:red; font-size:50px;">{{ pending }}</h1>
+
+        </div>
+
+        <div class="card progress-card">
+
+            <i class="fa-solid fa-spinner"></i>
+
+            <h3>In Progress</h3>
+
+            <h1>{{ progress }}</h1>
+
+        </div>
+
+        <div class="card resolved-card">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+            <h3>Resolved</h3>
+
+            <h1>{{ resolved }}</h1>
+
+        </div>
+
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section">
+
+        <h2>📊 Complaint Analytics</h2>
+
+        <div class="chart-container">
+
+            <canvas id="complaintChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <!-- Search -->
+    <form method="GET" action="/admin" class="search-box">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="🔍 Search by Name, Mobile, Ward..."
+            value="{{ request.args.get('search','') }}">
+
+        <button type="submit">Search</button>
+
+    </form>
+
+    <!-- Filters -->
+    <div class="filters">
+
+        <a href="/admin" class="filter-btn">
+            All
+        </a>
+
+        <a href="/admin?status=Pending" class="filter-btn pending-btn">
+            Pending
+        </a>
+
+        <a href="/admin?status=In Progress" class="filter-btn progress-btn">
+            In Progress
+        </a>
+
+        <a href="/admin?status=Resolved" class="filter-btn resolved-btn">
+            Resolved
+        </a>
+
+    </div>
+
+    <!-- Complaint Table -->
+    <table>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Name</th>
+
+            <th>Ward</th>
+
+            <th>Category</th>
+
+            <th>Status</th>
+
+            <th>Action</th>
+
+        </tr>
+
+        {% for complaint in complaints %}
+
+        <tr>
+
+            <td>{{ complaint.id }}</td>
+
+            <td>{{ complaint.name }}</td>
+
+            <td>{{ complaint.ward }}</td>
+
+            <td>{{ complaint.category }}</td>
+
+            <td>
+
+                {% if complaint.status == "Pending" %}
+
+                    <span class="status pending">
+                        Pending
+                    </span>
+
+                {% elif complaint.status == "In Progress" %}
+
+                    <span class="status progress">
+                        In Progress
+                    </span>
+
+                {% else %}
+
+                    <span class="status resolved">
+                        Resolved
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a href="/view/{{ complaint.id }}" class="btn-view">
+
+                    👁 View
+
+                </a>
+
+                <a href="/edit/{{ complaint.id }}" class="btn-edit">
+
+                    ✏ Edit
+
+                </a>
+
+                <a href="/delete/{{ complaint.id }}"
+                   class="btn-delete"
+                   onclick="return confirm('Delete this complaint?')">
+
+                    🗑 Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+const ctx = document.getElementById('complaintChart');
+
+new Chart(ctx, {
+
+    type: 'doughnut',
+
+    data: {
+
+        labels: [
+
+            'Pending',
+
+            'In Progress',
+
+            'Resolved'
+
+        ],
+
+        datasets: [{
+
+            data: [
+
+                {{ pending }},
+
+                {{ progress }},
+
+                {{ resolved }}
+
+            ],
+
+            backgroundColor: [
+
+                '#ffc107',
+
+                '#0dcaf0',
+
+                '#198754'
+
+            ]
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+
+                position: 'bottom'
+
+            }
+
+        }
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

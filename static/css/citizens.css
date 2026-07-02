@@ -1,0 +1,61 @@
+.citizens-container{
+
+    width:90%;
+
+    max-width:1200px;
+
+    margin:50px auto;
+
+}
+
+.citizens-container h2{
+
+    color:#0d6efd;
+
+    margin-bottom:30px;
+
+    text-align:center;
+
+}
+
+.citizens-container table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+
+}
+
+.citizens-container th{
+
+    background:#0d6efd;
+
+    color:white;
+
+    padding:16px;
+
+}
+
+.citizens-container td{
+
+    padding:16px;
+
+    text-align:center;
+
+    border-bottom:1px solid #eee;
+
+}
+
+.citizens-container tr:hover{
+
+    background:#f8f9fa;
+
+}

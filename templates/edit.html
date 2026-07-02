@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Edit Complaint
+{% endblock %}
+
+{% block content %}
+
+<div class="report-container">
+
+    <h2>Update Complaint</h2>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Citizen Name</label>
+            <input
+                type="text"
+                value="{{ complaint.name }}"
+                readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <input
+                type="text"
+                value="{{ complaint.category }}"
+                readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+
+            <select name="status">
+
+                <option value="Pending"
+                    {% if complaint.status == "Pending" %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="In Progress"
+                    {% if complaint.status == "In Progress" %}selected{% endif %}>
+                    In Progress
+                </option>
+
+                <option value="Resolved"
+                    {% if complaint.status == "Resolved" %}selected{% endif %}>
+                    Resolved
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Reply to Citizen</label>
+
+            <textarea
+                name="admin_reply"
+                rows="6"
+                placeholder="Write your reply here...">{{ complaint.admin_reply }}</textarea>
+
+        </div>
+
+        <button type="submit">
+            Save Changes
+        </button>
+        <br><br>
+
+        <a
+        href="https://wa.me/91{{ complaint.mobile }}?text=Hello%20{{ complaint.name }},%0A%0AWard%20Shabdam%0A%0AYour%20complaint%20has%20been%20updated.%0A%0AComplaint%20ID:%20{{ complaint.id }}%0AStatus:%20{{ complaint.status }}%0A%0AThank%20you."
+        target="_blank"
+        class="whatsapp-btn">
+
+        📱 Send WhatsApp
+
+        </a> 
+
+    </form>
+
+</div>
+
+{% endblock %}

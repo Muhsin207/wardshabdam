@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ program.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="announcement-container" style="max-width:900px;margin:40px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,.15);">
+
+    <h2>{{ program.title }}</h2>
+
+    <br>
+
+    {% if program.photo %}
+
+    <img
+    src="{{ url_for('static', filename='uploads/' + program.photo) }}"
+    style="width:100%;border-radius:10px;">
+
+    {% endif %}
+
+    <br><br>
+
+    <p style="font-size:18px;line-height:1.8;">
+
+        {{ program.description }}
+
+    </p>
+
+    <br>
+
+    <strong>Published:</strong>
+
+    {{ program.created_at }}
+
+    <br><br>
+
+    <a href="/programs" class="btn-add">
+
+        ← Back to Programs
+
+    </a>
+
+</div>
+
+{% endblock %}

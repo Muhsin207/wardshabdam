@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Announcements
+{% endblock %}
+
+{% block content %}
+
+<div class="report-container">
+
+    <h2>📢 All Announcements</h2>
+
+    {% for announcement in announcements %}
+
+    <div class="announcement-card">
+
+        {% if announcement.photo %}
+        <img
+            src="{{ url_for('static', filename='uploads/' + announcement.photo) }}"
+            width="250">
+        {% endif %}
+
+        <h3>{{ announcement.title }}</h3>
+
+        <p>
+            {{ announcement.description[:150] }}...
+        </p>
+
+        <a href="/announcement/{{ announcement.id }}">
+            Read More
+        </a>
+
+        <hr>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

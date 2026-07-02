@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Report an Issue
+{% endblock %}
+
+{% block content %}
+
+<section class="report-section">
+
+    <div class="report-container">
+
+        <h2>Report an Issue</h2>
+
+        <p>പരാതി രജിസ്റ്റർ ചെയ്യുക</p>
+
+        <form action="/report" method="POST" enctype="multipart/form-data">
+
+            <div class="form-group">
+
+                <label>Full Name</label>
+
+                    <input
+                    type="text"
+                    name="name"
+                    value="{{ citizen.fullname }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+
+               <label>Mobile Number</label>
+
+                    <input
+                    type="text"
+                    name="mobile"
+                    value="{{ citizen.mobile }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+
+                <label>Ward Number</label>
+
+               <label>Ward</label>
+
+                <input
+                    type="text"
+                    name="ward"
+                    value="{{ citizen.ward }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+
+                <label>Category</label>
+
+                <select name="category" required>
+
+                    <option>Select Category</option>
+
+                    <option>Road Issues</option>
+                    <option>Water Supply</option>
+                    <option>Street Lights</option>
+                    <option>Waste Management</option>
+                    <option>Health</option>
+                    <option>Environment</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                 <label>Description</label>
+
+                <textarea
+                     name="description"
+                    rows="5"
+                    placeholder="Describe the issue"
+                    required></textarea>
+                
+            </div>
+
+            <div class="form-group">
+
+                <label>Upload Photo</label>
+
+                <input type="file" name="photo">
+
+            </div>
+
+            <button class="submit-btn">
+
+                Submit Complaint
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add Download
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>📂 Upload Document</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <label>Title</label>
+
+        <input
+            type="text"
+            name="title"
+            required>
+
+        <br><br>
+
+        <label>Category</label>
+
+        <select name="category" required>
+
+            <option>Ward Form</option>
+            <option>Approval Application</option>
+            <option>Circular</option>
+            <option>Other</option>
+
+        </select>
+
+        <br><br>
+
+        <label>Description</label>
+
+        <textarea
+            name="description"
+            rows="5"></textarea>
+
+        <br><br>
+
+        <label>Select PDF</label>
+
+        <input
+            type="file"
+            name="pdf"
+            accept=".pdf"
+            required>
+
+        <br><br>
+
+        <button class="btn-add">
+            Upload Document
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

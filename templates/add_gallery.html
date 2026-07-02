@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Gallery{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center text-success mb-4">
+            📷 Add Gallery Photo
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label>Photo Title</label>
+                <input type="text"
+                       name="title"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label>Description</label>
+                <textarea name="description"
+                          class="form-control"
+                          rows="4"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label>Event Date</label>
+                <input type="date"
+                       name="event_date"
+                       class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Select Photo</label>
+                <input type="file"
+                       name="photo"
+                       class="form-control"
+                       accept="image/*"
+                       required>
+            </div>
+
+            <button class="btn btn-success w-100">
+                Upload Photo
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

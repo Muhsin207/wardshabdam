@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ announcement.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="announcement-container" style="max-width:900px;margin:40px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+
+    <h2>{{ announcement.title }}</h2>
+
+    <br>
+
+    {% if announcement.photo %}
+    <img src="{{ url_for('static', filename='uploads/' + announcement.photo) }}"
+         style="width:100%;max-height:500px;object-fit:cover;border-radius:10px;">
+    {% endif %}
+
+    <br><br>
+
+    <p style="font-size:18px;line-height:1.8;">
+        {{ announcement.description }}
+    </p>
+
+    <br>
+
+    <p>
+        <strong>Published:</strong>
+        {{ announcement.created_at }}
+    </p>
+
+    <br>
+
+    <a href="/announcements" class="btn-add">
+        ← Back to Announcements
+    </a>
+
+</div>
+
+{% endblock %}

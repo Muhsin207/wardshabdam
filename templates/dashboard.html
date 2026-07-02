@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Citizen Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div class="dashboard-title">
+
+        <h1>
+            <i class="fa-solid fa-user-circle"></i>
+            Welcome, {{ citizen["fullname"] }}
+        </h1>
+
+        <p>
+            Manage your complaints and stay connected with Ward Shabdam.
+        </p>
+
+    </div>
+
+    <a href="/notifications" class="dashboard-notification">
+
+        <i class="fa-solid fa-bell"></i>
+
+        {% if notification_count > 0 %}
+            <span class="notification-badge">
+                {{ notification_count }}
+            </span>
+        {% endif %}
+
+    </a>
+
+</div>
+    <div class="dashboard-cards">
+
+        <a href="/report" class="dashboard-card">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <h3>Report Complaint</h3>
+            <p>Submit a new complaint in your ward.</p>
+        </a>
+
+        <a href="/my_complaints" class="dashboard-card">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>My Complaints</h3>
+            <p>Track the status of your submitted complaints.</p>
+        </a>
+
+        <a href="/profile" class="dashboard-card">
+            <i class="fa-solid fa-user"></i>
+            <h3>My Profile</h3>
+            <p>View and update your profile details.</p>
+        </a>
+
+        <a href="/announcements" class="dashboard-card">
+            <i class="fa-solid fa-bullhorn"></i>
+            <h3>Announcements</h3>
+            <p>Read the latest announcements.</p>
+        </a>
+
+        <a href="/programs" class="dashboard-card">
+            <i class="fa-solid fa-calendar-days"></i>
+            <h3>Programs</h3>
+            <p>View government schemes and programs.</p>
+        </a>
+
+        <a href="/logout" class="dashboard-card logout-card">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <h3>Logout</h3>
+            <p>Sign out of your account.</p>
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

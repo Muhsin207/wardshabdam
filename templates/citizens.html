@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Citizens
+{% endblock %}
+
+{% block content %}
+
+<div class="citizens-container">
+
+    <h2>👥 Registered Citizens</h2>
+
+    <table>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Full Name</th>
+
+            <th>Mobile</th>
+
+            <th>Ward</th>
+
+        </tr>
+
+        {% for citizen in citizens %}
+
+        <tr>
+
+            <td>{{ citizen.id }}</td>
+
+            <td>{{ citizen.fullname }}</td>
+
+            <td>{{ citizen.mobile }}</td>
+
+            <td>{{ citizen.ward }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

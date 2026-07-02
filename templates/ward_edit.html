@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Update Complaint
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>Update Complaint Status</h2>
+
+    <form method="POST">
+
+        <p><strong>Name:</strong> {{ complaint.name }}</p>
+        <p><strong>Category:</strong> {{ complaint.category }}</p>
+        <p><strong>Description:</strong> {{ complaint.description }}</p>
+
+        <label>Status</label>
+
+        <select name="status">
+
+            <option {% if complaint.status=="Pending" %}selected{% endif %}>
+                Pending
+            </option>
+
+            <option {% if complaint.status=="In Progress" %}selected{% endif %}>
+                In Progress
+            </option>
+
+            <option {% if complaint.status=="Resolved" %}selected{% endif %}>
+                Resolved
+            </option>
+
+        </select>
+
+        <br><br>
+        <br><br>
+
+        <label>Reply to Citizen</label>
+
+        <textarea
+            name="reply"
+            rows="5"
+            style="width:100%;padding:10px;">{{ complaint.admin_reply }}</textarea>
+
+        <br><br>
+
+        <button class="btn-add">
+            Update Status
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

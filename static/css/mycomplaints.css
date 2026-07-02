@@ -1,0 +1,245 @@
+/* ===========================
+   My Complaints
+=========================== */
+
+.complaints-container{
+
+    max-width:1200px;
+
+    margin:60px auto;
+
+    padding:20px;
+
+}
+
+.page-title{
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+}
+
+.page-title h1{
+
+    color:#0d6efd;
+
+    font-size:40px;
+
+}
+
+.page-title p{
+
+    color:#666;
+
+    margin-top:10px;
+
+}
+
+.complaints-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:30px;
+
+}
+
+.complaint-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+
+    overflow:hidden;
+
+    transition:.3s;
+
+}
+
+.complaint-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.card-header{
+
+    background:#0d6efd;
+
+    color:white;
+
+    padding:18px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.card-body{
+
+    padding:25px;
+
+}
+
+.card-body p{
+
+    margin-bottom:12px;
+
+}
+
+.card-footer{
+
+    padding:20px;
+
+    text-align:center;
+
+}
+
+.view-btn{
+
+    display:inline-block;
+
+    padding:12px 25px;
+
+    background:#198754;
+
+    color:white;
+
+    text-decoration:none;
+
+    border-radius:30px;
+
+    transition:.3s;
+
+}
+
+.view-btn:hover{
+
+    background:#157347;
+
+}
+
+.status{
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    color:white;
+
+    font-size:13px;
+
+}
+
+.pending{
+
+    background:#ffc107;
+
+    color:black;
+
+}
+
+.progress{
+
+    background:#0dcaf0;
+
+}
+
+.resolved{
+
+    background:#198754;
+
+}
+
+.empty-box{
+
+    background:white;
+
+    padding:60px;
+
+    text-align:center;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+
+}
+
+.empty-box i{
+
+    font-size:70px;
+
+    color:#0d6efd;
+
+    margin-bottom:20px;
+
+}
+
+.report-btn{
+
+    display:inline-block;
+
+    margin-top:20px;
+
+    padding:14px 30px;
+
+    background:#0d6efd;
+
+    color:white;
+
+    text-decoration:none;
+
+    border-radius:30px;
+
+}
+.feedback-btn{
+
+    display:inline-block;
+
+    margin-top:15px;
+
+    background:#ffc107;
+
+    color:#000;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.feedback-btn:hover{
+
+    background:#e0a800;
+
+}
+.feedback-done{
+
+    display:inline-block;
+
+    margin-top:15px;
+
+    background:#198754;
+
+    color:white;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    font-weight:bold;
+
+}

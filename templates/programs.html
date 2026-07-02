@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Programs
+{% endblock %}
+
+{% block content %}
+
+<div class="cards-container">
+
+    <h2>📌 Government Programs</h2>
+
+    {% for program in programs %}
+
+    <div class="card">
+
+        {% if program.photo %}
+        <img src="{{ url_for('static', filename='uploads/' + program.photo) }}">
+        {% endif %}
+
+        <h3>{{ program.title }}</h3>
+
+        <p>{{ program.description[:120] }}...</p>
+
+        <a href="/program/{{ program.id }}" class="btn-add">
+            Read More
+        </a>
+        <br><br>
+
+
+        <br><br>
+
+        <a href="/delete_program/{{ program.id }}"
+        onclick="return confirm('Are you sure you want to delete this program?')"
+        style="color:red;">
+            🗑 Delete
+</a>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

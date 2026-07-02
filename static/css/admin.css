@@ -1,0 +1,467 @@
+/* ===========================
+   Admin Dashboard
+=========================== */
+
+.admin-container{
+    width:95%;
+    max-width:1400px;
+    margin:50px auto;
+}
+
+.admin-container h2{
+    text-align:center;
+    color:#0d6efd;
+    font-size:40px;
+    margin-bottom:35px;
+}
+
+/* ===========================
+   Action Buttons
+=========================== */
+
+.admin-actions{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:35px;
+}
+
+.btn-add{
+    background:#0d6efd;
+    color:white;
+    text-decoration:none;
+    padding:14px 28px;
+    border-radius:30px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.btn-add:hover{
+    background:#084298;
+    transform:translateY(-3px);
+}
+
+/* ===========================
+   Statistics Cards
+=========================== */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+    margin-bottom:40px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card h3{
+    color:#666;
+    margin-bottom:12px;
+    font-size:20px;
+}
+
+.card h1{
+    font-size:48px;
+    color:#0d6efd;
+}
+
+/* ===========================
+   Search Box
+=========================== */
+
+.search-box{
+    display:flex;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.search-box input{
+    flex:1;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+}
+
+.search-box button{
+    padding:15px 30px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.search-box button:hover{
+    background:#084298;
+}
+
+/* ===========================
+   Filter Buttons
+=========================== */
+
+.filters{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+}
+
+.filter-btn{
+    text-decoration:none;
+    color:white;
+    padding:10px 22px;
+    border-radius:30px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.filter-btn:hover{
+    transform:translateY(-3px);
+}
+
+.filter-btn{
+    background:#0d6efd;
+}
+
+.pending-btn{
+    background:#ffc107;
+    color:black;
+}
+
+.progress-btn{
+    background:#0dcaf0;
+    color:black;
+}
+
+.resolved-btn{
+    background:#198754;
+}
+
+/* ===========================
+   Table
+=========================== */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+}
+
+table th{
+    background:#0d6efd;
+    color:white;
+    padding:18px;
+    font-size:16px;
+}
+
+table td{
+    padding:16px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+}
+
+table tr:hover{
+    background:#f8f9fa;
+}
+
+/* ===========================
+   Status
+=========================== */
+
+.status{
+    padding:8px 16px;
+    border-radius:30px;
+    font-weight:bold;
+    color:white;
+}
+
+.pending{
+    background:#ffc107;
+    color:black;
+}
+
+.progress{
+    background:#0dcaf0;
+    color:black;
+}
+
+.resolved{
+    background:#198754;
+}
+
+/* ===========================
+   Action Buttons
+=========================== */
+
+.btn-view,
+.btn-edit,
+.btn-delete{
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:8px;
+
+    color:white;
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    margin:3px;
+
+    transition:.3s;
+
+}
+
+.btn-view{
+    background:#0d6efd;
+}
+
+.btn-edit{
+    background:#fd7e14;
+}
+
+.btn-delete{
+    background:#dc3545;
+}
+
+.btn-view:hover,
+.btn-edit:hover,
+.btn-delete:hover{
+    transform:translateY(-2px);
+}
+
+/* ===========================
+   Mobile
+=========================== */
+
+@media(max-width:768px){
+
+.search-box{
+    flex-direction:column;
+}
+
+.filters{
+    justify-content:center;
+}
+
+table{
+    display:block;
+    overflow-x:auto;
+}
+
+}
+/* Dashboard Header */
+
+.admin-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:35px;
+
+}
+
+.admin-header h2{
+
+    margin:0;
+
+    color:#0d6efd;
+
+}
+
+.admin-header p{
+
+    color:#666;
+
+    margin-top:8px;
+
+}
+
+/* Statistics Icons */
+
+.card i{
+
+    font-size:50px;
+
+    margin-bottom:15px;
+
+}
+
+.total-card i{
+
+    color:#0d6efd;
+
+}
+
+.pending-card i{
+
+    color:#ffc107;
+
+}
+
+.progress-card i{
+
+    color:#0dcaf0;
+
+}
+
+.resolved-card i{
+
+    color:#198754;
+
+}
+/* ===========================
+   Charts
+=========================== */
+
+.chart-section{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    margin-bottom:40px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+
+}
+
+.chart-section h2{
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+    color:#0d6efd;
+
+}
+
+.chart-container{
+
+    width:100%;
+
+    max-width:500px;
+
+    margin:auto;
+
+}
+/* ===========================
+   Mobile Admin
+=========================== */
+
+@media (max-width:768px){
+
+    .stats{
+
+        flex-direction:column;
+
+    }
+
+    .card{
+
+        width:100%;
+
+    }
+
+    .filters{
+
+        flex-direction:column;
+
+    }
+
+    .search-box{
+
+        flex-direction:column;
+
+    }
+
+    .search-box input{
+
+        width:100%;
+
+    }
+
+    .search-box button{
+
+        width:100%;
+
+    }
+
+    .admin-actions{
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:10px;
+
+    }
+
+    .btn-add{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+}
+/* Force statistics numbers to be visible */
+.stats .card h1{
+    color:#0d6efd !important;
+    font-size:48px !important;
+    font-weight:bold !important;
+    display:block !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    line-height:1.2;
+}
+.ward-btn{
+    background:#198754;
+}
+
+.ward-btn:hover{
+    background:#157347;
+}
+
+.manage-btn{
+    background:#0d6efd;
+}
+
+.manage-btn:hover{
+    background:#0b5ed7;
+}
+
+.survey-btn{
+    background:#6f42c1;
+}
+
+.survey-btn:hover{
+    background:#5a32a3;
+}

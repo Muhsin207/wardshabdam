@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Ward Shabdam{% endblock %}</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cards.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/announcement.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/change_password.css') }}">
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/change_password.css') }}">
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/mycomplaints.css') }}">
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/citizens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/gallery.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0d6efd">
+</head>
+
+<body>
+
+   <!-- ========================= -->
+<!-- Navigation Bar -->
+<!-- ========================= -->
+
+<div class="navbar">
+
+ <header class="top-header">
+
+    <!-- Logo -->
+    <div class="logo-section">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+
+        <div class="logo-text">
+            <h2>Ward Shabdam</h2>
+            <small>Digital Citizen Service Portal</small>
+        </div>
+    </div>
+
+    <!-- Menu Button -->
+    <button class="menu-btn" onclick="openMenu()">
+        ☰
+    </button>
+
+</header>
+    <!-- Notification -->
+    {% if session.get("citizen_id") %}
+    <a href="/notifications" class="notification-bell">
+
+        <i class="fa-solid fa-bell"></i>
+
+        {% if notification_count > 0 %}
+        <span class="notification-badge">
+            {{ notification_count }}
+        </span>
+        {% endif %}
+
+    </a>
+    {% endif %}
+
+</div>
+
+<!-- Sidebar -->
+
+<div id="sidebar" class="sidebar">
+
+    <button class="close-btn" onclick="closeMenu()">
+        ✖
+    </button>
+
+    <ul>
+
+        <li><a href="/"> Home</a></li>
+
+        <li><a href="/announcements"> Announcements</a></li>
+
+        <li><a href="/programs"> Programs</a></li>
+        <li>
+            <a href="/circulars">
+                <i class="fa-solid fa-bullhorn"></i>
+                Circulars
+            </a>
+        </li>
+        <li><a href="/about"> About</a></li>
+
+        <li><a href="/ward-members"> Ward Members</a></li>
+
+        <li><a href="/gallery"> Gallery</a></li>
+        <li>
+            <a href="/downloads">
+                <i class="fa-solid fa-download"></i>
+                Downloads
+            </a>
+        </li>
+
+        <li><a href="/survey"> Survey</a></li>
+
+        {% if session.get("citizen_id") %}
+
+            <li><a href="/dashboard"> Dashboard</a></li>
+
+            <li><a href="/report"> Report Issue</a></li>
+
+            <li><a href="/my_complaints"> My Complaints</a></li>
+
+            <li><a href="/profile">👤 My Profile</a></li>
+
+            <li><a href="/logout">🚪 Logout</a></li>
+
+        {% elif session.get("admin_id") %}
+
+            <li><a href="/admin">⚙ Admin Dashboard</a></li>
+
+            <li><a href="/citizens">👥 Citizens</a></li>
+
+            <li><a href="/admin_logout">🚪 Logout</a></li>
+
+        {% elif session.get("ward_member_id") %}
+
+            <li><a href="/ward-dashboard">👥 Ward Dashboard</a></li>
+
+            <li><a href="/ward-logout">🚪 Logout</a></li>
+
+        {% else %}
+
+            <li>
+                <a href="#" onclick="openLoginModal()">
+                    🔐 Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+</div>
+
+<!-- Login Modal -->
+
+<div id="loginModal" class="login-modal">
+
+    <div class="login-box">
+
+        <span class="close-login"
+              onclick="closeLoginModal()">
+            &times;
+        </span>
+
+        <h2>Welcome</h2>
+
+        <p>Select Login Type</p>
+
+        <a href="/login" class="login-btn citizen">
+            👤 Citizen Login
+        </a>
+
+        <a href="/ward-login" class="login-btn ward">
+            👥 Ward Member Login
+        </a>
+
+        <a href="/admin_login" class="login-btn admin">
+            🛡 Admin Login
+        </a>
+
+        <hr>
+
+        <p>New Citizen?</p>
+
+        <a href="/register" class="register-btn">
+
+            ➕ Register Here
+
+        </a>
+
+    </div>
+
+</div>
+
+    <!-- ========================= -->
+    <!-- Main Page Content -->
+    <!-- ========================= -->
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- ========================= -->
+    <!-- Footer -->
+    <!-- ========================= -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <div class="footer-about">
+
+            <h2>Ward Shabdam</h2>
+
+            <p>
+                Digital Citizen Service Portal
+            </p>
+
+            <p>
+                Thachanattukkara Grama Panchayat
+            </p>
+
+        </div>
+
+        <div class="footer-links">
+
+            <h3>Quick Links</h3>
+
+            <a href="/">Home</a>
+            <a href="/announcements">Announcements</a>
+            <a href="/programs">Programs</a>
+            <a href="/contact">Contact</a>
+
+        </div>
+
+        <div class="footer-contact">
+
+            <h3>Contact</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Thachanattukkara, Kerala
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91 98765 43210
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+                wardshabdam@gmail.com
+            </p>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <p class="copyright">
+
+        © 2026 Ward Shabdam |
+        All Rights Reserved
+
+    </p>
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block scripts %}
+{% endblock %}
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", function () {
+
+        navigator.serviceWorker.register("/static/service-worker.js")
+        .then(function(registration) {
+
+            console.log("Service Worker Registered");
+
+        })
+        .catch(function(error) {
+
+            console.log("Service Worker Failed", error);
+
+        });
+
+    });
+
+}
+</script>
+</body>
+</html>

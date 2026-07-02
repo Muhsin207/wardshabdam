@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Complaint Details
+{% endblock %}
+
+{% block content %}
+
+<div class="view-container">
+
+    <div class="view-header">
+
+        <h1>
+            <i class="fa-solid fa-file-circle-exclamation"></i>
+            Complaint Details
+        </h1>
+
+        {% if complaint.status == "Pending" %}
+            <span class="status pending">Pending</span>
+
+        {% elif complaint.status == "In Progress" %}
+            <span class="status progress">In Progress</span>
+
+        {% else %}
+            <span class="status resolved">Resolved</span>
+        {% endif %}
+
+    </div>
+
+    <div class="info-grid">
+
+        <div class="info-box">
+            <h3>📂 Category</h3>
+            <p>{{ complaint.category }}</p>
+        </div>
+
+        <div class="info-box">
+            <h3>📍 Ward</h3>
+            <p>{{ complaint.ward }}</p>
+        </div>
+
+    </div>
+
+    <div class="detail-box">
+
+        <h3>📝 Complaint Description</h3>
+
+        <p>{{ complaint.description }}</p>
+
+    </div>
+
+    {% if complaint.photo %}
+
+    <div class="detail-box">
+
+        <h3>📷 Uploaded Photo</h3>
+
+        <img src="{{ url_for('static', filename='uploads/' + complaint.photo) }}" class="complaint-photo">
+
+    </div>
+
+    {% endif %}
+
+    <div class="reply-box">
+
+        <h3>💬 Admin Reply</h3>
+
+        {% if complaint.admin_reply %}
+
+            <p>{{ complaint.admin_reply }}</p>
+
+        {% else %}
+
+            <p>No reply from the admin yet.</p>
+
+        {% endif %}
+
+    </div>
+
+    <div style="text-align:center;margin-top:40px;">
+
+        <a href="/my_complaints" class="back-btn">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to My Complaints
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

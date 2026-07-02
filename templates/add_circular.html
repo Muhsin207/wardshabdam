@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add Circular
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>📢 Add Circular</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <label>Title</label>
+
+        <input
+            type="text"
+            name="title"
+            required>
+
+        <br><br>
+
+        <label>Description</label>
+
+        <textarea
+            name="description"
+            rows="6"
+            required></textarea>
+
+        <br><br>
+
+        <label>PDF (Optional)</label>
+
+        <input
+            type="file"
+            name="pdf"
+            accept=".pdf">
+
+        <br><br>
+
+        <label>
+
+            <input
+                type="checkbox"
+                name="important">
+
+            Mark as Important
+
+        </label>
+
+        <br><br>
+
+        <button class="btn-add">
+            Publish Circular
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

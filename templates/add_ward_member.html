@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Ward Member{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center text-success mb-4">
+            Add Ward Member
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label>Ward Number</label>
+                <input type="number" name="ward_no" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Member Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Designation</label>
+                <select name="designation" class="form-control" required>
+                    <option value="Ward Member">Ward Member</option>
+                    <option value="President">President</option>
+                    <option value="Vice President">Vice President</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Photo</label>
+                <input type="file" name="photo" class="form-control">
+            </div>
+
+            <button class="btn btn-success w-100">
+                Add Member
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

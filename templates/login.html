@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Citizen Login
+{% endblock %}
+
+{% block content %}
+
+<div class="register-container">
+
+    <div class="register-card">
+
+        <h2>Citizen Login</h2>
+
+        <p>Login to your Ward Shabdam account</p>
+
+        <form action="/login" method="POST">
+
+           <label>Mobile Number</label>
+
+            <input
+            type="text"
+            name="mobile"
+            placeholder="Enter Mobile Number"
+            required>
+
+            <label>Password</label>
+
+            <input type="password" name="password" required>
+
+            <div class="forgot-link">
+
+            <div class="forgot-link">
+
+            <a href="/forgot_password">
+                Forgot Password?
+            </a>
+
+        </div>
+
+        <button class="login-btn">
+            Login
+        </button>
+
+        </form>
+
+        <p class="login-link">
+
+            Don't have an account?
+
+            <a href="/register">Register Here</a>
+
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

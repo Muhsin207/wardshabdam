@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Ward Member Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>👥 Ward {{ ward_no }} Dashboard</h2>
+<div class="stats">
+
+    <div class="card total-card">
+        <i class="fa-solid fa-folder"></i>
+        <h3>Total Complaints</h3>
+        <h1>{{ total }}</h1>
+    </div>
+
+    <div class="card pending-card">
+        <i class="fa-solid fa-clock"></i>
+        <h3>Pending</h3>
+        <h1>{{ pending }}</h1>
+    </div>
+
+    <div class="card progress-card">
+        <i class="fa-solid fa-spinner"></i>
+        <h3>In Progress</h3>
+        <h1>{{ progress }}</h1>
+    </div>
+
+    <div class="card resolved-card">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>Resolved</h3>
+        <h1>{{ resolved }}</h1>
+    </div>
+
+</div>
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Ward</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>View</th>
+        </tr>
+
+        {% for complaint in complaints %}
+
+        <tr>
+
+            <td>{{ complaint.id }}</td>
+            <td>{{ complaint.name }}</td>
+            <td>{{ complaint.ward }}</td>
+            <td>{{ complaint.category }}</td>
+            <td>{{ complaint.status }}</td>
+
+            <td>
+                <a href="/view/{{ complaint.id }}" class="btn-view">
+                    👁 View
+                </a>
+
+                <a href="/ward-edit/{{ complaint.id }}" class="btn-edit">
+                    ✏ Update
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

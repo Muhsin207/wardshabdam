@@ -1,0 +1,118 @@
+/* ===========================
+   Mobile Responsive
+=========================== */
+
+@media (max-width: 768px) {
+
+    /* Body */
+    body{
+        overflow-x:hidden;
+    }
+
+    /* Container */
+    .container,
+    .admin-container,
+    .view-container{
+        width:95%;
+        margin:auto;
+    }
+
+    /* Navbar */
+    .navbar{
+        flex-direction:column;
+        align-items:center;
+        padding:15px;
+    }
+
+    .logo{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .logo img{
+        width:70px;
+        height:70px;
+    }
+
+    .logo h2{
+        font-size:24px;
+    }
+
+    .logo p{
+        font-size:14px;
+    }
+
+    .nav-links{
+        flex-direction:column;
+        width:100%;
+        margin-top:15px;
+    }
+
+    .nav-links li{
+        width:100%;
+    }
+
+    .nav-links a{
+        display:block;
+        padding:12px;
+        text-align:center;
+    }
+
+    /* Hero Section */
+
+    .hero{
+        padding:50px 20px;
+        text-align:center;
+    }
+
+    .hero h1{
+        font-size:30px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    /* Statistics */
+
+    .stats{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:15px;
+    }
+
+    .card{
+        padding:20px;
+    }
+
+    .card h1{
+        font-size:32px;
+    }
+
+    /* Tables */
+
+    table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    /* Buttons */
+
+    .btn-add,
+    .btn-view,
+    .btn-edit,
+    .btn-delete{
+        width:100%;
+        text-align:center;
+        margin-bottom:10px;
+    }
+
+    /* Images */
+
+    img{
+        max-width:100%;
+        height:auto;
+    }
+
+}

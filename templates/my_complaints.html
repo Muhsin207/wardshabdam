@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}
+My Complaints
+{% endblock %}
+
+{% block content %}
+
+<div class="complaints-container">
+
+    <div class="page-title">
+        <h1>📋 My Complaints</h1>
+        <p>Track all complaints submitted by you.</p>
+    </div>
+
+    {% if complaints %}
+
+    <div class="complaints-grid">
+
+        {% for complaint in complaints %}
+
+        <div class="complaint-card">
+
+            <div class="card-header">
+                <h3>{{ complaint.category }}</h3>
+
+                {% if complaint.status == "Pending" %}
+                    <span class="status pending">Pending</span>
+
+                {% elif complaint.status == "In Progress" %}
+                    <span class="status progress">In Progress</span>
+
+
+                    {% if complaint.feedback_id %}
+
+                        <span class="feedback-done">
+                            ✅ Feedback Submitted
+                        </span>
+
+                    {% else %}
+
+                        <a href="/feedback/{{ complaint.id }}" class="feedback-btn">
+                            ⭐ Rate Our Service
+                        </a>
+
+                    {% endif %}
+
+                {% else %}
+                    <span class="status resolved">Resolved</span>
+                {% endif %}
+
+            </div>
+
+            <div class="card-body">
+
+                <p><strong>Complaint ID:</strong> {{ complaint.id }}</p>
+
+                <p><strong>Ward:</strong> {{ complaint.ward }}</p>
+
+                <p><strong>Category:</strong> {{ complaint.category }}</p>
+
+            </div>
+
+            <div class="card-footer">
+
+                <a href="/my_complaint/{{ complaint.id }}" class="view-btn">
+                    <i class="fa-solid fa-eye"></i>
+                    View Details
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-box">
+
+        <i class="fa-solid fa-face-smile"></i>
+
+        <h2>No Complaints Yet</h2>
+
+        <p>You haven't submitted any complaints.</p>
+
+        <a href="/report" class="report-btn">
+            Report an Issue
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

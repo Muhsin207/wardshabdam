@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="report-container">
+
+    <h2>✏️ Edit Profile</h2>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input
+                type="text"
+                name="fullname"
+                value="{{ citizen.fullname }}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input
+                type="text"
+                value="{{ citizen.mobile }}"
+                readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input
+                type="email"
+                name="email"
+                value="{{ citizen.email }}">
+        </div>
+
+        <button type="submit">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

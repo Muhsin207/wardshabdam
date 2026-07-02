@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Ward Members{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center text-success mb-4">
+        Manage Ward Members
+    </h2>
+
+    <table class="table table-bordered table-striped">
+
+        <thead class="table-success">
+            <tr>
+                <th>ID</th>
+                <th>Ward</th>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for member in members %}
+
+            <tr>
+                <td>{{ member.id }}</td>
+                <td>{{ member.ward_no }}</td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.designation }}</td>
+                <td>{{ member.phone }}</td>
+
+                <td>
+
+                    <a href="/admin/edit-ward-member/{{ member.id }}"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <a href="/admin/delete-ward-member/{{ member.id }}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete this member?')">
+                        Delete
+                    </a>
+
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Complaint Details
+{% endblock %}
+
+{% block content %}
+
+<div class="view-container">
+
+    <h2>Complaint Details</h2>
+
+    <div class="detail-card">
+
+        <p><strong>ID :</strong> {{ complaint.id }}</p>
+
+        <p><strong>Name :</strong> {{ complaint.name }}</p>
+
+        <p><strong>Mobile :</strong> {{ complaint.mobile }}</p>
+
+        <p><strong>Ward :</strong> {{ complaint.ward }}</p>
+
+        <p><strong>Category :</strong> {{ complaint.category }}</p>
+
+        <p><strong>Status :</strong> {{ complaint.status }}</p>
+        {% if complaint.photo %}
+
+<hr>
+
+<h3>Complaint Photo</h3>
+
+<img src="{{ url_for('static', filename='uploads/' + complaint.photo) }}"
+     alt="Complaint Photo"
+     style="max-width:100%;
+            max-height:400px;
+            border-radius:10px;
+            border:1px solid #ddd;">
+
+{% endif %}
+        <hr>
+
+        <h3>Admin Reply</h3>
+
+{% if complaint.admin_reply %}
+
+    <div style="background:#f5f5f5;padding:15px;border-radius:8px;">
+
+    {{ complaint.admin_reply }}
+
+ </div>
+
+{% else %}
+
+        <p>No reply from admin yet.</p>
+
+{% endif %}
+        <p><strong>Description :</strong></p>
+
+        <div class="description">
+
+            {{ complaint.description }}
+
+        </div>
+
+        <br>
+
+        <a href="/admin" class="back-btn">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

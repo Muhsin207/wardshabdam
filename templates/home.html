@@ -1,0 +1,190 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home | Ward Shabdam
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="overlay">
+
+        <h2>വാർഡ് ശബ്ദം</h2>
+
+        <h3>Thachanattukkara Grama Panchayat</h3>
+
+        <h4>തച്ചനാട്ടുകര ഗ്രാമ പഞ്ചായത്ത്</h4>
+
+        <p>
+            Together for a Better Ward
+            <br>
+            Empowering Citizens • Strengthening Communities
+        </p>
+
+    <div class="hero-buttons">
+
+    <a href="/report" class="action-card report-card">
+        <div class="card-icon">
+            <i class="fa-solid fa-bullhorn"></i>
+        </div>
+
+        <div class="card-text">
+            <h3>Report an Issue</h3>
+            <p>Submit your complaints and suggestions</p>
+        </div>
+
+        <div class="card-arrow">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </a>
+
+
+    <a href="/programs" class="action-card">
+        <div class="card-icon">
+            <i class="fa-solid fa-calendar-days"></i>
+        </div>
+
+        <div class="card-text">
+            <h3>Programs</h3>
+            <p>View all programs and events</p>
+        </div>
+
+        <div class="card-arrow">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </a>
+
+
+    <a href="/my_complaints" class="action-card">
+        <div class="card-icon">
+            <i class="fa-solid fa-folder-open"></i>
+        </div>
+
+        <div class="card-text">
+            <h3>My Complaints</h3>
+            <p>Track your submitted complaints</p>
+        </div>
+
+        <div class="card-arrow">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </a>
+
+</div>
+</section>
+
+<!-- Statistics -->
+<section class="stats-section">
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h2>{{ total }}</h2>
+            <p>Total</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ pending }}</h2>
+            <p>Pending</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ progress }}</h2>
+            <p>In Progress</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ resolved }}</h2>
+            <p>Resolved</p>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="announcement-section">
+
+    <h2>📢 Latest Announcements</h2>
+
+    <div class="announcement-grid">
+
+        {% for item in announcements %}
+
+        <div class="announcement-card">
+
+            {% if item.photo %}
+            <img src="{{ url_for('static', filename='uploads/' + item.photo) }}" alt="Announcement">
+            {% endif %}
+
+            <h3>{{ item.title }}</h3>
+
+            <p>
+                {{ item.description[:120] }}...
+            </p>
+
+            <a href="/announcement/{{ item.id }}" class="read-more-btn">
+                Read More →
+            </a>
+
+        </div>
+
+        {% else %}
+
+        <p>No announcements available.</p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+<!-- Services Section -->
+
+<section class="services">
+
+    <h2>Our Services</h2>
+
+    <p>Services provided by Thachanattukkara Grama Panchayat</p>
+
+    <div class="service-grid">
+
+        <div class="service-card">
+            <i class="fa-solid fa-road"></i>
+            <h3>Road Issues</h3>
+            <p>Report damaged roads and road maintenance requests.</p>
+        </div>
+
+        <div class="service-card">
+            <i class="fa-solid fa-faucet-drip"></i>
+            <h3>Water Supply</h3>
+            <p>Submit complaints related to water supply and pipelines.</p>
+        </div>
+
+        <div class="service-card">
+            <i class="fa-solid fa-lightbulb"></i>
+            <h3>Street Lights</h3>
+            <p>Report non-working or damaged street lights.</p>
+        </div>
+
+        <div class="service-card">
+            <i class="fa-solid fa-recycle"></i>
+            <h3>Waste Management</h3>
+            <p>Garbage collection and sanitation related complaints.</p>
+        </div>
+
+        <div class="service-card">
+            <i class="fa-solid fa-tree"></i>
+            <h3>Environment</h3>
+            <p>Environmental protection and cleanliness initiatives.</p>
+        </div>
+
+        <div class="service-card">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <h3>Health</h3>
+            <p>Health services, camps, and public welfare activities.</p>
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}

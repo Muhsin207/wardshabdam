@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Edit Circular
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>✏ Edit Circular</h2>
+
+    <form method="POST">
+
+        <label>Title</label>
+
+        <input
+            type="text"
+            name="title"
+            value="{{ circular.title }}"
+            required>
+
+        <br><br>
+
+        <label>Description</label>
+
+        <textarea
+            name="description"
+            rows="6"
+            required>{{ circular.description }}</textarea>
+
+        <br><br>
+
+        <label>
+
+            <input
+                type="checkbox"
+                name="important"
+                {% if circular.important == 1 %}checked{% endif %}>
+
+            Mark as Important
+
+        </label>
+
+        <br><br>
+
+        <button class="btn-add">
+
+            Update Circular
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

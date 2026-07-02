@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}Ward Members{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center text-success mb-4">
+        Ward Members
+    </h2>
+
+    <div class="row">
+
+        {% for member in members %}
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow h-100">
+
+                {% if member.photo %}
+                <img src="{{ url_for('static', filename='uploads/' + member.photo) }}"
+                     class="card-img-top"
+                     style="height:250px; object-fit:cover;">
+                {% endif %}
+
+                <div class="card-body text-center">
+
+                    <h4>{{ member.name }}</h4>
+
+                    <p><strong>Ward:</strong> {{ member.ward_no }}</p>
+
+                    <p>{{ member.designation }}</p>
+
+                    <p>📞 {{ member.phone }}</p>
+
+                    <p>✉ {{ member.email }}</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

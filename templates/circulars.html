@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Circulars
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+    <h2>📢 Panchayath Circulars</h2>
+
+    <form method="GET">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search Circular..."
+            value="{{ search }}">
+
+        <button class="btn-add">
+            Search
+        </button>
+
+    </form>
+
+    <br>
+
+    {% for circular in circulars %}
+
+    <div class="card">
+
+        {% if circular.important == 1 %}
+
+        <span class="badge-important">
+            ⭐ IMPORTANT
+        </span>
+
+        {% endif %}
+
+        <h3>{{ circular.title }}</h3>
+
+        <p>
+
+            {{ circular.description }}
+
+        </p>
+
+        {% if circular.pdf_file %}
+
+        <a
+            href="{{ url_for('static',
+            filename='documents/' + circular.pdf_file) }}"
+            target="_blank"
+            class="btn-view">
+
+            📄 View PDF
+
+        </a>
+
+        {% endif %}
+
+        <hr>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

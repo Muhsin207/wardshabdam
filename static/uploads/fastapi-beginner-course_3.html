@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FastAPI for Absolute Beginners — Ralfiz Technologies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  :root{
+    --navy:#0f1b3d;
+    --navy-light:#1b2a52;
+    --orange:#ff6a13;
+    --orange-soft:#ff8a44;
+    --bg:#f7f8fb;
+    --card:#ffffff;
+    --text:#1f2733;
+    --muted:#5b6577;
+    --border:#e6e9f0;
+    --code-bg:#1a1d29;
+    --sidebar-w:280px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.7;
+    font-size:16px;
+  }
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);
+    background:var(--navy);
+    color:#fff;
+    overflow-y:auto;
+    padding:0;
+    z-index:100;
+  }
+  .sidebar .brand{
+    padding:26px 24px 20px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    position:sticky;top:0;background:var(--navy);z-index:2;
+  }
+  .sidebar .brand .logo{
+    font-weight:800;font-size:1.15rem;letter-spacing:.3px;display:flex;align-items:center;gap:9px;
+  }
+  .sidebar .brand .logo .dot{width:11px;height:11px;border-radius:50%;background:var(--orange);display:inline-block}
+  .sidebar .brand .tag{font-size:.72rem;color:#9aa6c4;margin-top:6px;letter-spacing:.4px;text-transform:uppercase}
+  .sidebar nav{padding:14px 0 40px}
+  .sidebar nav a{
+    display:flex;gap:11px;align-items:baseline;
+    padding:9px 24px;color:#c2cae0;text-decoration:none;font-size:.86rem;
+    border-left:3px solid transparent;transition:all .15s;
+  }
+  .sidebar nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+  .sidebar nav a.active{background:rgba(255,106,19,.12);border-left-color:var(--orange);color:#fff}
+  .sidebar nav a .num{color:var(--orange-soft);font-weight:700;font-size:.78rem;min-width:18px}
+  /* ---------- Main ---------- */
+  .main{margin-left:var(--sidebar-w);padding:0}
+  .hero{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);
+    color:#fff;padding:64px 56px 56px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;
+    background:radial-gradient(circle,rgba(255,106,19,.28),transparent 70%);border-radius:50%;
+  }
+  .hero .pill{
+    display:inline-block;background:rgba(255,106,19,.18);color:var(--orange-soft);
+    padding:6px 14px;border-radius:30px;font-size:.74rem;font-weight:600;
+    letter-spacing:.6px;text-transform:uppercase;margin-bottom:20px;
+  }
+  .hero h1{font-size:2.6rem;font-weight:800;line-height:1.15;max-width:760px;letter-spacing:-.5px}
+  .hero p{margin-top:18px;font-size:1.08rem;color:#c8d0e6;max-width:620px}
+  .hero .meta{margin-top:28px;display:flex;gap:26px;flex-wrap:wrap;font-size:.86rem;color:#9aa6c4}
+  .hero .meta span{display:flex;align-items:center;gap:7px}
+  .hero .meta b{color:#fff;font-weight:600}
+  .content{padding:48px 56px 90px;max-width:920px}
+  section{margin-bottom:54px;scroll-margin-top:24px}
+  section h2{
+    font-size:1.7rem;font-weight:800;color:var(--navy);letter-spacing:-.3px;
+    padding-bottom:14px;margin-bottom:24px;border-bottom:2px solid var(--border);
+    display:flex;align-items:center;gap:14px;
+  }
+  section h2 .badge{
+    background:var(--orange);color:#fff;width:38px;height:38px;border-radius:10px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;
+  }
+  section h3{font-size:1.2rem;font-weight:700;color:var(--navy-light);margin:30px 0 12px}
+  p{margin-bottom:14px;color:var(--text)}
+  ul,ol{margin:0 0 16px 22px}
+  li{margin-bottom:7px}
+  a{color:var(--orange)}
+  strong{color:var(--navy);font-weight:700}
+  code:not([class*="language-"]){
+    background:#eef0f6;color:#c0392b;padding:2px 7px;border-radius:5px;
+    font-family:'JetBrains Mono',monospace;font-size:.86em;font-weight:500;
+  }
+  pre{
+    background:var(--code-bg)!important;border-radius:12px;padding:20px 22px!important;
+    overflow-x:auto;margin:18px 0;font-size:.86rem;line-height:1.6;
+    box-shadow:0 8px 24px rgba(15,27,61,.12);border:1px solid #2a2e3f;
+  }
+  pre code{font-family:'JetBrains Mono',monospace!important;font-size:.86rem!important}
+  .callout{
+    border-radius:12px;padding:18px 22px;margin:20px 0;border-left:4px solid;
+    font-size:.95rem;
+  }
+  .callout.concept{background:#fff6ef;border-color:var(--orange)}
+  .callout.concept .label{font-weight:700;color:var(--orange);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+  .callout.note{background:#eef3ff;border-color:#3b6fe0}
+  .callout.note .label{font-weight:700;color:#3b6fe0;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.9rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(15,27,61,.05)}
+  th{background:var(--navy);color:#fff;text-align:left;padding:12px 16px;font-weight:600;font-size:.84rem}
+  td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#fafbfd}
+  blockquote{border-left:4px solid var(--orange);background:#fff6ef;padding:14px 20px;border-radius:8px;margin:18px 0;color:var(--muted);font-style:italic}
+  .divider{height:1px;background:var(--border);margin:40px 0}
+  .final{
+    background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;
+    border-radius:16px;padding:36px 40px;margin-top:30px;
+  }
+  .final h3{color:#fff;margin-top:0}
+  .final p{color:#c8d0e6}
+  .footer{margin-left:var(--sidebar-w);background:var(--navy);color:#9aa6c4;padding:26px 56px;font-size:.82rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .footer b{color:#fff}
+  .footer a{color:var(--orange-soft);text-decoration:none}
+  /* progress bar */
+  .progress{position:fixed;top:0;left:var(--sidebar-w);right:0;height:3px;background:transparent;z-index:200}
+  .progress .bar{height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--orange-soft))}
+  /* mobile */
+  .menu-toggle{display:none}
+  @media(max-width:980px){
+    .sidebar{transform:translateX(-100%);transition:transform .25s}
+    .sidebar.open{transform:translateX(0)}
+    .main,.footer{margin-left:0}
+    .progress{left:0}
+    .content,.hero{padding-left:24px;padding-right:24px}
+    .hero h1{font-size:2rem}
+    .menu-toggle{
+      display:flex;position:fixed;top:16px;left:16px;z-index:150;
+      background:var(--navy);color:#fff;border:none;width:46px;height:46px;border-radius:12px;
+      align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)
+    }
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<div class="progress"><div class="bar" id="progressBar"></div></div>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo"><span class="dot"></span>Ralfiz&nbsp;Academy</div>
+    <div class="tag">FastAPI · Beginner Track</div>
+  </div>
+  <nav id="toc">
+    <a href="#p1"><span class="num">01</span> What is an API?</a>
+    <a href="#p2"><span class="num">02</span> Environment Setup</a>
+    <a href="#p3"><span class="num">03</span> Your First App</a>
+    <a href="#p3b"><span class="num">★</span> Simple Example API</a>
+    <a href="#p4"><span class="num">04</span> Functions &amp; Decorators</a>
+    <a href="#p5"><span class="num">05</span> Path Parameters</a>
+    <a href="#p6"><span class="num">06</span> Query Parameters</a>
+    <a href="#p7"><span class="num">07</span> Python Type Hints</a>
+    <a href="#p8"><span class="num">08</span> Request Bodies (Pydantic)</a>
+    <a href="#p9"><span class="num">09</span> HTTP Methods</a>
+    <a href="#p10"><span class="num">10</span> Mini Project: To-Do API</a>
+    <a href="#p10b"><span class="num">★</span> How to Test Your API</a>
+    <a href="#p11"><span class="num">11</span> Handling Errors</a>
+    <a href="#p12"><span class="num">12</span> What to Learn Next</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="hero">
+    <span class="pill">Beginner Friendly · Line-by-Line</span>
+    <h1>FastAPI for Absolute Beginners</h1>
+    <p>A gentle, complete introduction to building APIs with Python and FastAPI. Every concept is explained — including the Python basics you need along the way.</p>
+    <div class="meta">
+      <span>📘 <b>14 Sections</b></span>
+      <span>⏱ <b>~90 min read</b></span>
+      <span>🐍 <b>Python 3.8+</b></span>
+      <span>🎯 <b>Zero experience needed</b></span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PART 1 -->
+    <section id="p1">
+      <h2><span class="badge">1</span> What is an API? (And why FastAPI?)</h2>
+      <h3>What is an API?</h3>
+      <p><strong>API</strong> stands for <strong>Application Programming Interface</strong>. Think of it as a <em>waiter in a restaurant</em>:</p>
+      <ul>
+        <li><strong>You (the customer)</strong> = a website or mobile app</li>
+        <li><strong>The kitchen</strong> = the database/server where data lives</li>
+        <li><strong>The waiter (the API)</strong> = carries your request to the kitchen and brings food back</li>
+      </ul>
+      <p>You never walk into the kitchen yourself. You ask the waiter, and the waiter handles it. An API works exactly the same way — your app <em>asks</em> the API for data, and the API <em>responds</em>.</p>
+      <h3>What is FastAPI?</h3>
+      <p>FastAPI is a <strong>Python framework</strong> (a toolkit) for building APIs quickly. It is:</p>
+      <ul>
+        <li><strong>Fast</strong> — one of the fastest Python frameworks available</li>
+        <li><strong>Easy</strong> — very little code needed</li>
+        <li><strong>Automatic</strong> — it creates interactive documentation for you for free</li>
+        <li><strong>Modern</strong> — uses modern Python features that catch bugs early</li>
+      </ul>
+      <p>We will see all of these benefits as we go.</p>
+    </section>
+
+    <!-- PART 2 -->
+    <section id="p2">
+      <h2><span class="badge">2</span> Setting Up Your Environment</h2>
+      <p>Before writing code, we prepare our computer. Do these steps in your terminal (Command Prompt, PowerShell, or Mac/Linux Terminal).</p>
+      <h3>Step 1 — Check Python is installed</h3>
+      <pre><code class="language-bash">python --version</code></pre>
+      <p>This should show something like <code>Python 3.11.x</code>. FastAPI needs <strong>Python 3.8 or higher</strong>. If you don't have Python, download it from python.org.</p>
+      <h3>Step 2 — Create a project folder</h3>
+      <pre><code class="language-bash">mkdir my_first_api
+cd my_first_api</code></pre>
+      <ul>
+        <li><code>mkdir</code> = "make directory" (creates a folder named <code>my_first_api</code>)</li>
+        <li><code>cd</code> = "change directory" (move <em>into</em> that folder)</li>
+      </ul>
+      <h3>Step 3 — Create a virtual environment</h3>
+      <p>A <strong>virtual environment</strong> is a private, isolated box for your project's tools. It keeps this project's libraries separate from other projects so they don't conflict.</p>
+      <pre><code class="language-bash">python -m venv venv</code></pre>
+      <ul>
+        <li><code>python -m venv</code> = run Python's built-in <code>venv</code> tool</li>
+        <li>the second <code>venv</code> = the name of the folder it creates</li>
+      </ul>
+      <p><strong>Activate it:</strong></p>
+      <pre><code class="language-bash"># On Windows:
+venv\Scripts\activate
+
+# On Mac/Linux:
+source venv/bin/activate</code></pre>
+      <p>After activating, you'll see <code>(venv)</code> at the start of your terminal line. That means the box is open and active.</p>
+      <h3>Step 4 — Install FastAPI</h3>
+      <pre><code class="language-bash">pip install "fastapi[standard]"</code></pre>
+      <ul>
+        <li><code>pip</code> = Python's package installer (it downloads libraries for you)</li>
+        <li><code>fastapi[standard]</code> = installs FastAPI plus the extra tools it commonly needs (including the server that runs your app)</li>
+      </ul>
+      <p>You're ready to write code.</p>
+    </section>
+
+    <!-- PART 3 -->
+    <section id="p3">
+      <h2><span class="badge">3</span> Your First FastAPI App — Line by Line</h2>
+      <p>Create a file called <code>main.py</code> and type this:</p>
+      <pre><code class="language-python">from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}</code></pre>
+      <p>That's a complete, working API. Let's break down <strong>every single line</strong>.</p>
+
+      <h3>Line 1: <code>from fastapi import FastAPI</code></h3>
+      <p>This is an <strong>import statement</strong>. In Python, <code>import</code> brings in code that other people wrote so you can use it.</p>
+      <ul>
+        <li><code>fastapi</code> = the library we installed</li>
+        <li><code>FastAPI</code> = a specific tool <em>inside</em> that library (it's the main class that builds our app)</li>
+      </ul>
+      <p>Read it as: <em>"From the fastapi library, bring in the FastAPI tool."</em></p>
+      <div class="callout concept"><span class="label">🐍 Python Concept — what is a "class"?</span>A class is a blueprint for creating objects. <code>FastAPI</code> is a blueprint for creating an API application. When we <em>use</em> the blueprint, we get an actual app we can work with.</div>
+
+      <h3>Line 3: <code>app = FastAPI()</code></h3>
+      <p>Here we <strong>create</strong> our application from the blueprint.</p>
+      <ul>
+        <li><code>FastAPI()</code> = the parentheses <code>()</code> mean "build one now" (this is called <em>instantiating</em>)</li>
+        <li><code>app =</code> = we store the result in a variable named <code>app</code></li>
+      </ul>
+      <div class="callout concept"><span class="label">🐍 Python Concept — variables</span>A variable is a labeled box that holds a value. <code>app = FastAPI()</code> means "put the new FastAPI application into a box labeled <code>app</code>." From now on, whenever we write <code>app</code>, we mean that application.</div>
+
+      <h3>Line 5: <code>@app.get("/")</code></h3>
+      <p>This line is a <strong>decorator</strong> (notice the <code>@</code> symbol). It tells FastAPI: <em>"When someone visits the URL path <code>/</code> using a GET request, run the function written directly below me."</em></p>
+      <ul>
+        <li><code>@app.get</code> = "listen for a GET request" (GET = "give me data")</li>
+        <li><code>("/")</code> = the path. <code>/</code> is the <strong>root</strong> — the homepage of your API</li>
+      </ul>
+
+      <h3>Lines 6–7: The function</h3>
+      <pre><code class="language-python">def read_root():
+    return {"message": "Hello, World!"}</code></pre>
+      <ul>
+        <li><code>def</code> = "define a function"</li>
+        <li><code>read_root</code> = the name we chose</li>
+        <li><code>()</code> = inputs the function takes (none here)</li>
+        <li><code>:</code> = marks the start of the function's body</li>
+      </ul>
+      <div class="callout concept"><span class="label">🐍 Python Concept — dictionaries</span>A dictionary stores data as <code>key: value</code> pairs inside curly braces <code>{}</code>. Here the key is <code>"message"</code> and the value is <code>"Hello, World!"</code>. Ask for the label <code>"message"</code>, get back <code>"Hello, World!"</code>.</div>
+      <p>FastAPI automatically converts this dictionary into <strong>JSON</strong> — the standard text format APIs use to send data.</p>
+
+      <h3>Running your app</h3>
+      <pre><code class="language-bash">fastapi dev main.py</code></pre>
+      <p>You'll see a URL, usually <code>http://127.0.0.1:8000</code>. Open it in your browser.</p>
+      <div class="callout note"><span class="label">💡 What is 127.0.0.1:8000?</span><code>127.0.0.1</code> (also called <code>localhost</code>) means "this computer." <code>:8000</code> is the <strong>port</strong> — like a door number where the app is listening. So you're visiting your own machine, door 8000.</div>
+      <p>You should see <code>{"message":"Hello, World!"}</code>. <strong>You just built an API.</strong></p>
+      <h3>Bonus: Free automatic documentation</h3>
+      <p>Visit <code>http://127.0.0.1:8000/docs</code>. FastAPI built an interactive testing page for you — automatically, with zero extra code.</p>
+    </section>
+
+    <!-- SIMPLE EXAMPLE API -->
+    <section id="p3b">
+      <h2><span class="badge">★</span> A Simple Example API (Full Working File)</h2>
+      <p>Before we go deeper, here is one small but <strong>complete</strong> API you can copy, run, and play with right now. It has three endpoints and uses everything from Part 3. Don't worry if a line looks new — we explain each idea in the parts that follow.</p>
+      <p>Create a file called <code>main.py</code> and paste this:</p>
+      <pre><code class="language-python">from fastapi import FastAPI
+
+# 1. Create the application
+app = FastAPI()
+
+# 2. A homepage endpoint
+@app.get("/")
+def home():
+    return {"message": "Welcome to my first API!"}
+
+# 3. A greeting endpoint that uses a path parameter
+@app.get("/hello/{name}")
+def say_hello(name: str):
+    return {"greeting": "Hello, " + name + "!"}
+
+# 4. A simple calculator using query parameters
+@app.get("/add")
+def add_numbers(a: int, b: int):
+    return {"a": a, "b": b, "result": a + b}</code></pre>
+
+      <h3>What each endpoint does</h3>
+      <table>
+        <tr><th>Visit this URL</th><th>You get back</th></tr>
+        <tr><td><code>/</code></td><td><code>{"message": "Welcome to my first API!"}</code></td></tr>
+        <tr><td><code>/hello/Jobin</code></td><td><code>{"greeting": "Hello, Jobin!"}</code></td></tr>
+        <tr><td><code>/add?a=5&amp;b=3</code></td><td><code>{"a": 5, "b": 3, "result": 8}</code></td></tr>
+      </table>
+
+      <h3>Run it</h3>
+      <pre><code class="language-bash">fastapi dev main.py</code></pre>
+      <p>Then open <code>http://127.0.0.1:8000</code> in your browser. Try changing the URL to <code>/hello/Ralfiz</code> or <code>/add?a=10&amp;b=20</code> and watch the response change instantly.</p>
+
+      <div class="callout note"><span class="label">💡 Notice the magic</span>In <code>/add</code>, we wrote <code>a: int</code> and <code>b: int</code>. FastAPI automatically turns the text from the URL into real numbers and adds them. If you visit <code>/add?a=hello&amp;b=3</code>, FastAPI rejects it with a clear error — you never wrote a single line of validation. That's the power you'll understand fully by Part 7.</div>
+
+      <p>This tiny file already shows the three ways data flows into an API: a plain path (<code>/</code>), a <strong>path parameter</strong> (<code>/hello/{name}</code>), and <strong>query parameters</strong> (<code>/add?a=&amp;b=</code>). Keep this file handy — we'll build on these exact ideas next.</p>
+    </section>
+
+    <!-- PART 4 -->
+    <section id="p4">
+      <h2><span class="badge">4</span> Understanding Functions &amp; Decorators</h2>
+      <h3>Functions</h3>
+      <p>A function is a named set of instructions you can run whenever you want.</p>
+      <pre><code class="language-python">def greet(name):
+    return "Hello, " + name</code></pre>
+      <ul>
+        <li><code>def greet(name):</code> — defines a function called <code>greet</code> taking one input called <code>name</code></li>
+        <li><code>return "Hello, " + name</code> — joins the text with whatever <code>name</code> is</li>
+      </ul>
+      <p>If you call <code>greet("Jobin")</code>, you get <code>"Hello, Jobin"</code>. The <code>+</code> <strong>joins strings together</strong> (called <em>concatenation</em>).</p>
+      <div class="callout concept"><span class="label">🐍 Python Concept — parameters vs arguments</span>The <code>name</code> inside the parentheses when defining is a <strong>parameter</strong> (a placeholder). The actual value you pass in, like <code>"Jobin"</code>, is an <strong>argument</strong>. Parameter = the empty slot; argument = what you put in it.</div>
+      <h3>Decorators</h3>
+      <p>A decorator is a function that <em>wraps</em> another function to give it extra powers, using the <code>@</code> symbol on the line above.</p>
+      <p>In FastAPI, <code>@app.get("/")</code> doesn't change <em>what</em> your function returns — it <strong>registers</strong> your function with the app so it runs when a matching web request comes in. Just read it as:</p>
+      <blockquote>"Hey FastAPI, connect this URL path to this function."</blockquote>
+      <p>That mental model is enough to be productive.</p>
+    </section>
+
+    <!-- PART 5 -->
+    <section id="p5">
+      <h2><span class="badge">5</span> Path Parameters</h2>
+      <p>Often you want a URL to include a <em>specific</em> value — like a user ID. These are <strong>path parameters</strong>.</p>
+      <pre><code class="language-python">@app.get("/users/{user_id}")
+def get_user(user_id):
+    return {"user_id": user_id}</code></pre>
+      <ul>
+        <li><code>{user_id}</code> in curly braces means "this part is a variable that changes"</li>
+        <li>The name in the braces <strong>must match</strong> the function parameter name</li>
+      </ul>
+      <p><strong>Try it:</strong> visit <code>http://127.0.0.1:8000/users/42</code> and you'll get <code>{"user_id": "42"}</code>. Notice <code>42</code> arrived as <strong>text</strong>. To make it a real number, add a type hint:</p>
+      <pre><code class="language-python">@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    return {"user_id": user_id}</code></pre>
+      <p>By adding <code>: int</code>, FastAPI converts <code>42</code> to a real integer <em>and</em> rejects anything that isn't a number — automatically.</p>
+    </section>
+
+    <!-- PART 6 -->
+    <section id="p6">
+      <h2><span class="badge">6</span> Query Parameters</h2>
+      <p><strong>Query parameters</strong> are extra options added after a <code>?</code>. You've seen these: <code>?page=2&amp;sort=price</code>.</p>
+      <pre><code class="language-python">@app.get("/products")
+def list_products(category: str = "all", limit: int = 10):
+    return {"category": category, "limit": limit}</code></pre>
+      <ul>
+        <li><code>category: str = "all"</code> — text, defaults to <code>"all"</code> if not provided</li>
+        <li><code>limit: int = 10</code> — number, defaults to <code>10</code></li>
+      </ul>
+      <p>Because these aren't in the URL path, FastAPI treats them as <strong>query parameters</strong> automatically.</p>
+      <table>
+        <tr><th>URL</th><th>Result</th></tr>
+        <tr><td><code>/products</code></td><td>category = "all", limit = 10 (defaults)</td></tr>
+        <tr><td><code>/products?category=shoes</code></td><td>category = "shoes", limit = 10</td></tr>
+        <tr><td><code>/products?category=shoes&amp;limit=5</code></td><td>category = "shoes", limit = 5</td></tr>
+      </table>
+      <div class="callout concept"><span class="label">🐍 Python Concept — default values</span>When you write <code>limit: int = 10</code>, the <code>= 10</code> makes that parameter <strong>optional</strong>. If the caller doesn't provide it, Python uses <code>10</code>. Without a default, the parameter would be required.</div>
+    </section>
+
+    <!-- PART 7 -->
+    <section id="p7">
+      <h2><span class="badge">7</span> Python Type Hints (Important Foundation)</h2>
+      <p>You've seen <code>: int</code> and <code>: str</code>. These are <strong>type hints</strong>, and they're a big reason FastAPI is so powerful.</p>
+      <h3>What is a "type"?</h3>
+      <table>
+        <tr><th>Type</th><th>Means</th><th>Example</th></tr>
+        <tr><td><code>int</code></td><td>Integer (whole number)</td><td><code>42</code>, <code>-7</code></td></tr>
+        <tr><td><code>float</code></td><td>Decimal number</td><td><code>3.14</code>, <code>9.99</code></td></tr>
+        <tr><td><code>str</code></td><td>String (text)</td><td><code>"hello"</code></td></tr>
+        <tr><td><code>bool</code></td><td>Boolean (true/false)</td><td><code>True</code>, <code>False</code></td></tr>
+        <tr><td><code>list</code></td><td>A list of items</td><td><code>[1, 2, 3]</code></td></tr>
+        <tr><td><code>dict</code></td><td>A dictionary</td><td><code>{"name": "Jobin"}</code></td></tr>
+      </table>
+      <h3>What is a type hint?</h3>
+      <pre><code class="language-python">age: int = 25
+name: str = "Jobin"
+price: float = 99.99
+is_active: bool = True</code></pre>
+      <p>The part after the colon is the hint. Plain Python doesn't <em>force</em> these rules, but <strong>FastAPI does</strong> — and that's the magic:</p>
+      <ul>
+        <li>FastAPI reads your type hints</li>
+        <li>It automatically <strong>validates</strong> incoming data (rejects bad input)</li>
+        <li>It automatically <strong>converts</strong> data to the right type</li>
+        <li>It uses them to build that free documentation</li>
+      </ul>
+      <p>So <code>def get_user(user_id: int):</code> guarantees <code>user_id</code> arrives as a real integer, or returns a clear error. Free input validation just by being descriptive.</p>
+    </section>
+
+    <!-- PART 8 -->
+    <section id="p8">
+      <h2><span class="badge">8</span> Request Bodies with Pydantic</h2>
+      <p>When creating something — say, a new user — we send a whole package of data. This is the <strong>request body</strong>, usually as JSON. FastAPI handles it using <strong>Pydantic</strong>.</p>
+      <pre><code class="language-python">from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+@app.post("/users")
+def create_user(user: User):
+    return {"message": "User created", "data": user}</code></pre>
+      <h3>The User class</h3>
+      <ul>
+        <li><code>class User(BaseModel):</code> — defines a data shape called <code>User</code>; <code>(BaseModel)</code> inherits validation powers</li>
+        <li><code>name: str</code> — must have a name that is text</li>
+        <li><code>email: str</code> — must have an email that is text</li>
+        <li><code>age: int</code> — must have an age that is a whole number</li>
+      </ul>
+      <div class="callout concept"><span class="label">🐍 Python Concept — inheritance</span>When a class is written as <code>class User(BaseModel)</code>, <code>User</code> <strong>inherits</strong> from <code>BaseModel</code> — it automatically gets all of BaseModel's abilities (like validation) for free, the way a child inherits traits from a parent. We just add our specific fields on top.</div>
+      <h3>The endpoint</h3>
+      <ul>
+        <li><code>@app.post("/users")</code> — listens for a <strong>POST</strong> request (POST = "create new data")</li>
+        <li><code>def create_user(user: User):</code> — expects an input matching the <code>User</code> shape; FastAPI reads the request body and validates it</li>
+        <li>If data is missing <code>email</code>, or <code>age</code> is text instead of a number, FastAPI <strong>automatically rejects it</strong>. You wrote zero validation code.</li>
+      </ul>
+      <h3>Testing it</h3>
+      <p>Open <code>http://127.0.0.1:8000/docs</code>, find <code>POST /users</code>, click "Try it out", and send:</p>
+      <pre><code class="language-json">{
+  "name": "Jobin",
+  "email": "jobin@example.com",
+  "age": 28
+}</code></pre>
+    </section>
+
+    <!-- PART 9 -->
+    <section id="p9">
+      <h2><span class="badge">9</span> HTTP Methods — GET, POST, PUT, DELETE</h2>
+      <p>When an app talks to an API, it uses an <strong>HTTP method</strong> to say <em>what kind</em> of action it wants. Think of them as verbs:</p>
+      <table>
+        <tr><th>Method</th><th>Meaning</th><th>Analogy</th></tr>
+        <tr><td><strong>GET</strong></td><td>Read / fetch data</td><td>Reading a page in a book</td></tr>
+        <tr><td><strong>POST</strong></td><td>Create new data</td><td>Writing a new entry</td></tr>
+        <tr><td><strong>PUT</strong></td><td>Update existing data</td><td>Erasing and rewriting an entry</td></tr>
+        <tr><td><strong>DELETE</strong></td><td>Remove data</td><td>Tearing out a page</td></tr>
+      </table>
+      <pre><code class="language-python">@app.get("/items")         # read items
+@app.post("/items")        # create an item
+@app.put("/items/{id}")    # update item with that id
+@app.delete("/items/{id}") # delete item with that id</code></pre>
+      <p>This pattern — using these four methods on resources — is the foundation of <strong>REST APIs</strong>, the standard style for building web APIs today.</p>
+    </section>
+
+    <!-- PART 10 -->
+    <section id="p10">
+      <h2><span class="badge">10</span> Mini Project — A Complete To-Do API</h2>
+      <p>Let's combine everything into one working application. It stores tasks <strong>in memory</strong> (a Python list) so we can focus on the API itself without a database yet.</p>
+      <pre><code class="language-python">from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+# Our "database" — just a Python list for now
+todos = []
+
+# The shape of one to-do item coming IN (from the user)
+class TodoCreate(BaseModel):
+    title: str
+    completed: bool = False
+
+# The shape of a to-do item going OUT (includes an id)
+class Todo(BaseModel):
+    id: int
+    title: str
+    completed: bool
+
+# CREATE a new to-do
+@app.post("/todos")
+def create_todo(todo: TodoCreate):
+    new_todo = {
+        "id": len(todos) + 1,
+        "title": todo.title,
+        "completed": todo.completed,
+    }
+    todos.append(new_todo)
+    return new_todo
+
+# READ all to-dos
+@app.get("/todos")
+def get_todos():
+    return todos
+
+# READ one to-do by id
+@app.get("/todos/{todo_id}")
+def get_todo(todo_id: int):
+    for todo in todos:
+        if todo["id"] == todo_id:
+            return todo
+    raise HTTPException(status_code=404, detail="Todo not found")
+
+# UPDATE a to-do
+@app.put("/todos/{todo_id}")
+def update_todo(todo_id: int, updated: TodoCreate):
+    for todo in todos:
+        if todo["id"] == todo_id:
+            todo["title"] = updated.title
+            todo["completed"] = updated.completed
+            return todo
+    raise HTTPException(status_code=404, detail="Todo not found")
+
+# DELETE a to-do
+@app.delete("/todos/{todo_id}")
+def delete_todo(todo_id: int):
+    for index, todo in enumerate(todos):
+        if todo["id"] == todo_id:
+            todos.pop(index)
+            return {"message": "Deleted successfully"}
+    raise HTTPException(status_code=404, detail="Todo not found")</code></pre>
+
+      <h3>Walking through the new pieces</h3>
+      <p><code>todos = []</code> — an empty <strong>list</strong>. A list <code>[]</code> holds many items in order. This is our temporary database.</p>
+      <p><strong>Two classes</strong> — the user shouldn't send an <code>id</code> (the server assigns it), so the <em>incoming</em> shape (<code>TodoCreate</code>) differs from the <em>complete</em> shape (<code>Todo</code>).</p>
+      <p><strong>Inside create_todo:</strong></p>
+      <ul>
+        <li><code>len(todos)</code> — <code>len()</code> counts items in the list; we add <code>1</code> for a simple new id</li>
+        <li><code>todo.title</code> — the dot <code>.</code> means "reach inside this object and grab this piece"</li>
+        <li><code>todos.append(new_todo)</code> — <code>.append()</code> adds an item to the end of a list</li>
+      </ul>
+      <div class="callout concept"><span class="label">🐍 Python Concept — for loops</span>A <code>for</code> loop repeats an action for every item in a collection. <code>for todo in todos:</code> means "go through the <code>todos</code> list one item at a time; call the current one <code>todo</code>."</div>
+      <div class="callout concept"><span class="label">🐍 Python Concept — if and ==</span><code>if</code> runs code only when a condition is true. <code>==</code> checks if two things are <strong>equal</strong> (two equals signs for comparison; one <code>=</code> is for assigning values — don't mix them up).</div>
+      <p><strong><code>raise HTTPException(...)</code></strong> — if the loop finishes without a match, we trigger an error on purpose. <code>raise</code> = trigger an error, <code>404</code> = standard "Not Found" code, <code>detail</code> = a friendly message.</p>
+      <div class="callout concept"><span class="label">🐍 Python Concept — enumerate</span>Normally a <code>for</code> loop gives just the item. <code>enumerate()</code> gives you <strong>both</strong> the position number (<code>index</code>) and the item, so we can remove the right one with <code>todos.pop(index)</code>.</div>
+      <div class="callout note"><span class="label">✅ CRUD</span><strong>C</strong>reate, <strong>R</strong>ead, <strong>U</strong>pdate, <strong>D</strong>elete — the four basic operations almost every app needs. You just built all four.</div>
+    </section>
+
+    <!-- HOW TO TEST -->
+    <section id="p10b">
+      <h2><span class="badge">★</span> How to Test Your API</h2>
+      <p>Writing an API is only half the job — you need to <strong>test</strong> it to confirm each endpoint works. There are four common ways, from easiest to most powerful. Beginners should start with the first two.</p>
+
+      <h3>1. The browser (GET requests only)</h3>
+      <p>The simplest test. Just type the URL into your browser's address bar:</p>
+      <pre><code class="language-bash">http://127.0.0.1:8000/add?a=5&b=3</code></pre>
+      <p>The browser shows the JSON response directly. This works for <strong>GET</strong> requests only — you can't easily send POST, PUT, or DELETE this way, because the browser bar always sends GET.</p>
+
+      <h3>2. The automatic docs — /docs (recommended for beginners)</h3>
+      <p>This is FastAPI's superpower. Open this URL in your browser:</p>
+      <pre><code class="language-bash">http://127.0.0.1:8000/docs</code></pre>
+      <p>You get a full interactive testing page (called <strong>Swagger UI</strong>) built automatically. To test any endpoint:</p>
+      <ol>
+        <li>Click the endpoint you want (e.g. <code>POST /todos</code>)</li>
+        <li>Click the <strong>"Try it out"</strong> button</li>
+        <li>Fill in any parameters or JSON body</li>
+        <li>Click <strong>"Execute"</strong></li>
+        <li>Scroll down to see the real response, status code, and headers</li>
+      </ol>
+      <p>This handles <strong>every</strong> HTTP method (GET, POST, PUT, DELETE) with no extra tools. For a beginner, this is the best place to test everything.</p>
+      <div class="callout note"><span class="label">💡 Bonus docs page</span>FastAPI also gives you a second style of docs at <code>http://127.0.0.1:8000/redoc</code> — cleaner for reading, though you can't click-to-test there. Use <code>/docs</code> for testing, <code>/redoc</code> for browsing.</div>
+
+      <h3>3. The command line — curl</h3>
+      <p><code>curl</code> is a tool built into most computers for sending requests from the terminal. Useful for quick checks and scripts.</p>
+      <p><strong>A GET request:</strong></p>
+      <pre><code class="language-bash">curl http://127.0.0.1:8000/todos</code></pre>
+      <p><strong>A POST request</strong> (creating a to-do) — we send JSON data:</p>
+      <pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Learn FastAPI", "completed": false}'</code></pre>
+      <ul>
+        <li><code>-X POST</code> — choose the HTTP method (default is GET)</li>
+        <li><code>-H "Content-Type: application/json"</code> — a <strong>header</strong> telling the server we're sending JSON</li>
+        <li><code>-d '{...}'</code> — the <strong>data</strong> (the request body) we're sending</li>
+      </ul>
+      <p><strong>A DELETE request:</strong></p>
+      <pre><code class="language-bash">curl -X DELETE http://127.0.0.1:8000/todos/1</code></pre>
+
+      <h3>4. A GUI tool — Postman or Thunder Client</h3>
+      <p>For real-world projects, developers use a visual tool to organize and re-run requests:</p>
+      <ul>
+        <li><strong>Postman</strong> — a popular standalone app. Create a request, pick the method from a dropdown, add headers and a JSON body in nice form fields, then hit Send.</li>
+        <li><strong>Thunder Client</strong> — a lightweight extension that lives inside VS Code, so you never leave your editor.</li>
+      </ul>
+      <p>These let you <strong>save</strong> collections of requests, reuse them, and share them with your team — ideal once a project grows.</p>
+
+      <h3>5. Automated tests in code (a peek ahead)</h3>
+      <p>Eventually you'll want tests that run automatically so you catch bugs before users do. FastAPI makes this easy with a built-in <code>TestClient</code>:</p>
+      <pre><code class="language-python">from fastapi.testclient import TestClient
+from main import app   # import the app from your main.py
+
+client = TestClient(app)
+
+def test_home():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Welcome to my first API!"}</code></pre>
+      <ul>
+        <li><code>TestClient(app)</code> — creates a fake client that calls your API in memory (no server needed)</li>
+        <li><code>client.get("/")</code> — sends a GET request, just like a browser would</li>
+        <li><code>assert</code> — a Python keyword meaning "this MUST be true, or fail the test"</li>
+        <li><code>response.status_code == 200</code> — check we got a success code</li>
+        <li><code>response.json()</code> — read the JSON the API sent back and compare it</li>
+      </ul>
+      <div class="callout concept"><span class="label">🐍 Python Concept — assert</span><code>assert</code> checks that a condition is true. If it is, nothing happens and the test passes. If it's false, Python raises an error and the test fails — telling you something broke. It's how automated tests "check" your code.</div>
+
+      <h3>Which one should you use?</h3>
+      <table>
+        <tr><th>Situation</th><th>Best tool</th></tr>
+        <tr><td>Just learning / quick GET check</td><td>Browser</td></tr>
+        <tr><td>Testing any endpoint while building</td><td><strong>/docs (start here)</strong></td></tr>
+        <tr><td>Quick terminal check or scripting</td><td>curl</td></tr>
+        <tr><td>Organized, repeatable testing on a real project</td><td>Postman / Thunder Client</td></tr>
+        <tr><td>Catching bugs automatically before release</td><td>TestClient (code)</td></tr>
+      </table>
+      <p>As a beginner, live in the <code>/docs</code> page. It's free, requires nothing to install, and tests everything.</p>
+    </section>
+
+    <!-- PART 11 -->
+    <section id="p11">
+      <h2><span class="badge">11</span> Handling Errors Properly</h2>
+      <p>Good APIs return clear, correct errors using <strong>status codes</strong> — numbers that tell the client what happened:</p>
+      <table>
+        <tr><th>Code</th><th>Meaning</th><th>When</th></tr>
+        <tr><td><code>200</code></td><td>OK</td><td>Everything worked (default for GET)</td></tr>
+        <tr><td><code>201</code></td><td>Created</td><td>Something was successfully created</td></tr>
+        <tr><td><code>400</code></td><td>Bad Request</td><td>The client sent invalid data</td></tr>
+        <tr><td><code>401</code></td><td>Unauthorized</td><td>Not logged in</td></tr>
+        <tr><td><code>403</code></td><td>Forbidden</td><td>Logged in but not allowed</td></tr>
+        <tr><td><code>404</code></td><td>Not Found</td><td>The thing doesn't exist</td></tr>
+        <tr><td><code>500</code></td><td>Server Error</td><td>Something broke on our side</td></tr>
+      </table>
+      <h3>Raising a clean error</h3>
+      <pre><code class="language-python">from fastapi import HTTPException
+
+if not user_found:
+    raise HTTPException(
+        status_code=404,
+        detail="User not found"
+    )</code></pre>
+      <p>This sends a proper <code>404</code> with a clear message instead of crashing. FastAPI also automatically returns <code>422</code> errors when incoming data fails type validation — again, free.</p>
+      <h3>Setting a custom success code</h3>
+      <pre><code class="language-python">@app.post("/todos", status_code=201)
+def create_todo(todo: TodoCreate):
+    ...</code></pre>
+      <p>Just add <code>status_code=201</code> to the decorator.</p>
+    </section>
+
+    <!-- PART 12 -->
+    <section id="p12">
+      <h2><span class="badge">12</span> What to Learn Next</h2>
+      <p>You now understand the core of FastAPI. Here's a roadmap from beginner to production-ready:</p>
+      <ol>
+        <li><strong>Databases</strong> — Replace the in-memory list with a real database. Learn <strong>SQLAlchemy</strong> and connect it to <strong>PostgreSQL</strong>.</li>
+        <li><strong>Async / await</strong> — FastAPI supports asynchronous code (<code>async def</code>) for handling many requests efficiently.</li>
+        <li><strong>Authentication</strong> — Protect endpoints with <strong>JWT tokens</strong> so only logged-in users can access certain routes.</li>
+        <li><strong>Project structure</strong> — Split one big <code>main.py</code> into organized folders using <strong>routers</strong> (<code>APIRouter</code>).</li>
+        <li><strong>Environment variables</strong> — Keep secrets out of code using a <code>.env</code> file and Pydantic settings.</li>
+        <li><strong>Deployment</strong> — Put your API online so the world can use it.</li>
+      </ol>
+
+      <h3>Key terms recap</h3>
+      <table>
+        <tr><th>Term</th><th>Quick definition</th></tr>
+        <tr><td>API</td><td>A messenger that lets apps request and exchange data</td></tr>
+        <tr><td>Endpoint</td><td>A single URL + method your API responds to</td></tr>
+        <tr><td>Decorator</td><td><code>@something</code> that connects a URL to a function</td></tr>
+        <tr><td>Path parameter</td><td>A variable inside the URL path (<code>/users/{id}</code>)</td></tr>
+        <tr><td>Query parameter</td><td>Optional values after <code>?</code> in a URL</td></tr>
+        <tr><td>Type hint</td><td><code>: int</code>, <code>: str</code> — tells FastAPI the data type</td></tr>
+        <tr><td>Pydantic model</td><td>A class describing the shape of your data</td></tr>
+        <tr><td>Request body</td><td>The JSON package a client sends to your API</td></tr>
+        <tr><td>CRUD</td><td>Create, Read, Update, Delete</td></tr>
+        <tr><td>Status code</td><td>A number describing the result (200, 404, etc.)</td></tr>
+      </table>
+
+      <div class="final">
+        <h3>Final Words</h3>
+        <p>You started knowing nothing about APIs and now you can build a complete, validated, documented CRUD API in Python. The most important habit from here is <strong style="color:#fff">practice</strong>: rebuild the To-Do API from memory, then turn it into something of your own — a notes API, a contacts API, a simple inventory API.</p>
+        <p>Every large system is just many small, well-understood endpoints like the ones you wrote today. Keep building. <strong style="color:var(--orange-soft)">Happy coding!</strong></p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <span>© Ralfiz Technologies — <b>Ralfiz Academy</b> · FastAPI Beginner Track</span>
+  <span>KIMS Avenue, Perinthalmanna, Kerala · <a href="https://www.ralfiz.com">www.ralfiz.com</a></span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  // active section highlighting + progress bar
+  const links = document.querySelectorAll('#toc a');
+  const sections = [...links].map(a => document.querySelector(a.getAttribute('href')));
+  const bar = document.getElementById('progressBar');
+
+  function onScroll(){
+    const scrollTop = window.scrollY;
+    const docH = document.body.scrollHeight - window.innerHeight;
+    bar.style.width = (scrollTop / docH * 100) + '%';
+
+    let current = 0;
+    sections.forEach((sec, i) => {
+      if(sec && sec.getBoundingClientRect().top <= 120) current = i;
+    });
+    links.forEach(l => l.classList.remove('active'));
+    if(links[current]) links[current].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+
+  // close mobile menu on link click
+  links.forEach(l => l.addEventListener('click', () => {
+    document.querySelector('.sidebar').classList.remove('open');
+  }));
+</script>
+</body>
+</html>
