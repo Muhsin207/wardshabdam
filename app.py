@@ -1610,6 +1610,12 @@ def edit_ward_member(id):
 
     cursor = conn.cursor()
 
+    cursor.execute(
+        "SELECT * FROM ward_members WHERE id=?",
+        (id,)
+    )
+    member = cursor.fetchone()
+
     if request.method == "POST":
 
         ward_no = request.form["ward_no"]
@@ -1618,10 +1624,28 @@ def edit_ward_member(id):
         phone = request.form["phone"]
         email = request.form["email"]
 
+        photo = request.files.get("photo")
+
+        # Keep the old photo by default
+        filename = member["photo"]
+
+        # If a new photo is uploaded
+        if photo and photo.filename != "":
+
+            filename = secure_filename(photo.filename)
+
+            photo.save(
+                os.path.join(
+                    app.config["UPLOAD_FOLDER"],
+                    filename
+                )
+            )
+
         cursor.execute("""
             UPDATE ward_members
             SET ward_no=?,
                 name=?,
+                photo=?,
                 designation=?,
                 phone=?,
                 email=?
@@ -1629,6 +1653,7 @@ def edit_ward_member(id):
         """, (
             ward_no,
             name,
+            filename,
             designation,
             phone,
             email,
@@ -1640,19 +1665,11 @@ def edit_ward_member(id):
 
         return redirect("/admin/ward-members")
 
-    cursor.execute(
-        "SELECT * FROM ward_members WHERE id=?",
-        (id,)
-    )
-
-    member = cursor.fetchone()
-
-    conn.close()
-
     return render_template(
         "edit_ward_member.html",
         member=member
     )
+
 @app.route("/admin/delete-ward-member/<int:id>")
 def delete_ward_member(id):
 

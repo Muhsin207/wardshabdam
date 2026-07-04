@@ -12,57 +12,78 @@
             Edit Ward Member
         </h2>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
 
-            <div class="mb-3">
-                <label>Ward Number</label>
-                <input type="number"
-                       name="ward_no"
-                       class="form-control"
-                       value="{{ member.ward_no }}"
-                       required>
-            </div>
+    <div class="mb-3">
+        <label>Ward Number</label>
+        <input type="number"
+               name="ward_no"
+               class="form-control"
+               value="{{ member.ward_no }}"
+               required>
+    </div>
 
-            <div class="mb-3">
-                <label>Name</label>
-                <input type="text"
-                       name="name"
-                       class="form-control"
-                       value="{{ member.name }}"
-                       required>
-            </div>
+    <div class="mb-3">
+        <label>Name</label>
+        <input type="text"
+               name="name"
+               class="form-control"
+               value="{{ member.name }}"
+               required>
+    </div>
 
-            <div class="mb-3">
-                <label>Designation</label>
-                <input type="text"
-                       name="designation"
-                       class="form-control"
-                       value="{{ member.designation }}"
-                       required>
-            </div>
+    <div class="mb-3">
+        <label>Designation</label>
+        <input type="text"
+               name="designation"
+               class="form-control"
+               value="{{ member.designation }}"
+               required>
+    </div>
 
-            <div class="mb-3">
-                <label>Phone</label>
-                <input type="text"
-                       name="phone"
-                       class="form-control"
-                       value="{{ member.phone }}"
-                       required>
-            </div>
+    <div class="mb-3">
+        <label>Phone</label>
+        <input type="text"
+               name="phone"
+               class="form-control"
+               value="{{ member.phone }}"
+               required>
+    </div>
 
-            <div class="mb-3">
-                <label>Email</label>
-                <input type="email"
-                       name="email"
-                       class="form-control"
-                       value="{{ member.email }}">
-            </div>
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="email"
+               name="email"
+               class="form-control"
+               value="{{ member.email }}">
+    </div>
 
-            <button class="btn btn-warning w-100">
-                Update Member
-            </button>
+    <div class="mb-3">
 
-        </form>
+        <label>Current Photo</label><br>
+
+        <img src="{{ url_for('static', filename='uploads/' + member['photo']) }}"
+             width="150"
+             style="border-radius:10px; margin-bottom:15px;">
+
+    </div>
+
+    <div class="mb-3">
+
+        <label>Change Photo</label>
+
+        <input type="file"
+               name="photo"
+               class="form-control"
+               accept="image/*">
+
+    </div>
+
+    <button class="btn btn-warning w-100">
+        Update Member
+    </button>
+
+</form>
 
     </div>
 
