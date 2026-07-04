@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Citizen Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-primary">
+            👤 Citizen Profile
+        </h2>
+
+        <hr>
+
+        <table class="table table-bordered">
+
+            <tr>
+                <th>Full Name</th>
+                <td>{{ citizen.fullname }}</td>
+            </tr>
+
+            <tr>
+                <th>Mobile</th>
+                <td>{{ citizen.mobile }}</td>
+            </tr>
+
+            <tr>
+                <th>Email</th>
+                <td>{{ citizen.email }}</td>
+            </tr>
+
+            <tr>
+                <th>Ward</th>
+                <td>{{ citizen.ward }}</td>
+            </tr>
+
+        </table>
+
+        <div class="mt-3">
+
+            <a href="/admin/edit-citizen/{{ citizen.id }}"
+               class="btn btn-warning">
+                ✏️ Edit Citizen
+            </a>
+
+            <a href="/admin/delete-citizen/{{ citizen.id }}"
+               class="btn btn-danger"
+               onclick="return confirm('Delete this citizen?');">
+                🗑 Delete Citizen
+            </a>
+
+            <a href="/citizens"
+               class="btn btn-secondary">
+                ⬅ Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

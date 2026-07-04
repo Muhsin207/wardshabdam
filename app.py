@@ -2829,5 +2829,119 @@ def view_note(id):
         "view_note.html",
         note=note
     )
+@app.route("/admin/edit-citizen/<int:id>", methods=["GET", "POST"])
+def edit_citizen(id):
+
+    admin_required()
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM citizens WHERE id=?",
+        (id,)
+    )
+
+    citizen = cursor.fetchone()
+
+    if citizen is None:
+        conn.close()
+        return "Citizen not found", 404
+
+    if request.method == "POST":
+
+        fullname = request.form["fullname"]
+        mobile = request.form["mobile"]
+        ward = request.form["ward"]
+
+        cursor.execute("""
+            UPDATE citizens
+            SET fullname=?,
+                mobile=?,
+                ward=?
+            WHERE id=?
+        """, (
+            fullname,
+            mobile,
+            ward,
+            id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/citizens")
+
+    conn.close()
+
+    return render_template(
+        "edit_citizen.html",
+        citizen=citizen
+    )
+
+@app.route("/admin/view-citizen/<int:id>")
+def view_citizen(id):
+
+    admin_required()
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM citizens WHERE id=?",
+        (id,)
+    )
+
+    citizen = cursor.fetchone()
+
+    conn.close()
+
+    if citizen is None:
+        return "Citizen not found", 404
+
+    return render_template(
+        "view_citizen.html",
+        citizen=citizen
+    )
+@app.route("/admin/delete-citizen/<int:id>", methods=["GET", "POST"])
+def delete_citizen(id):
+
+    admin_required()
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM citizens WHERE id=?",
+        (id,)
+    )
+
+    citizen = cursor.fetchone()
+
+    if citizen is None:
+        conn.close()
+        return "Citizen not found", 404
+
+    if request.method == "POST":
+
+        cursor.execute(
+            "DELETE FROM citizens WHERE id=?",
+            (id,)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/citizens")
+
+    conn.close()
+
+    return render_template(
+        "delete_citizen.html",
+        citizen=citizen
+    )
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

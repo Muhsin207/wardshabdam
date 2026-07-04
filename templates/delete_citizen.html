@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Delete Citizen
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4 text-center">
+
+        <h2 class="text-danger">
+            ⚠ Delete Citizen
+        </h2>
+
+        <hr>
+
+        <p>
+            Are you sure you want to permanently delete this citizen?
+        </p>
+
+        <h4>{{ citizen.fullname }}</h4>
+
+        <p>
+            📱 {{ citizen.mobile }}
+        </p>
+
+        <p>
+            🏘 Ward {{ citizen.ward }}
+        </p>
+
+        <form method="POST">
+
+            <button class="btn btn-danger">
+                🗑 Delete Citizen
+            </button>
+
+            <a href="/citizens"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

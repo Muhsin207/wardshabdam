@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Edit Citizen
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-warning">
+            ✏️ Edit Citizen
+        </h2>
+
+        <form method="POST">
+
+            <div class="mb-3">
+                <label>Full Name</label>
+                <input
+                    type="text"
+                    name="fullname"
+                    class="form-control"
+                    value="{{ citizen.fullname }}"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label>Mobile</label>
+                <input
+                    type="text"
+                    name="mobile"
+                    class="form-control"
+                    value="{{ citizen.mobile }}"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    value="{{ citizen.email }}">
+            </div>
+
+            <div class="mb-3">
+
+                <label>Ward</label>
+
+                <select
+                    name="ward"
+                    class="form-select"
+                    required>
+
+                    {% for i in range(1,18) %}
+
+                        <option
+                            value="Ward {{ i }}"
+                            {% if citizen.ward == "Ward " ~ i %}selected{% endif %}>
+
+                            Ward {{ i }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <button class="btn btn-success">
+                💾 Update Citizen
+            </button>
+
+            <a href="/citizens"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -12,35 +12,52 @@ Citizens
 
     <table>
 
-        <tr>
+    <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Mobile</th>
+        <th>Ward</th>
+        <th>Actions</th>
+    </tr>
 
-            <th>ID</th>
+    {% for citizen in citizens %}
 
-            <th>Full Name</th>
+    <tr>
 
-            <th>Mobile</th>
+        <td>{{ citizen.id }}</td>
 
-            <th>Ward</th>
+        <td>{{ citizen.fullname }}</td>
 
-        </tr>
+        <td>{{ citizen.mobile }}</td>
 
-        {% for citizen in citizens %}
+        <td>{{ citizen.ward }}</td>
 
-        <tr>
+        <td>
 
-            <td>{{ citizen.id }}</td>
+            <a href="/admin/view-citizen/{{ citizen.id }}"
+               class="btn btn-info btn-sm">
+                👁 View
+            </a>
 
-            <td>{{ citizen.fullname }}</td>
+            <a href="/admin/edit-citizen/{{ citizen.id }}"
+               class="btn btn-warning btn-sm">
+                ✏️ Edit
+            </a>
 
-            <td>{{ citizen.mobile }}</td>
+            <a href="/admin/delete-citizen/{{ citizen.id }}"
+                class="btn btn-danger btn-sm">
 
-            <td>{{ citizen.ward }}</td>
+                    🗑 Delete
 
-        </tr>
+            </a>
 
-        {% endfor %}
+        </td>
 
-    </table>
+    </tr>
+
+    {% endfor %}
+
+</table>
 
 </div>
 
