@@ -11,6 +11,7 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cards.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/announcement.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
@@ -88,72 +89,170 @@
         ✖
     </button>
 
-    <ul>
+   <ul class="sidebar-menu">
 
-        <li><a href="/"> Home</a></li>
+    <li>
+        <a href="/">
+            <i class="fa-solid fa-house"></i>
+            ഹോം
+        </a>
+    </li>
 
-        <li><a href="/announcements"> Announcements</a></li>
+    <li>
+        <a href="/announcements">
+            <i class="fa-solid fa-bullhorn"></i>
+            അറിയിപ്പുകൾ
+        </a>
+    </li>
 
-        <li><a href="/programs"> Programs</a></li>
-        <li>
-            <a href="/circulars">
-                <i class="fa-solid fa-bullhorn"></i>
-                Circulars
-            </a>
-        </li>
-        <li><a href="/about"> About</a></li>
+    <li>
+        <a href="/programs">
+            <i class="fa-solid fa-calendar-days"></i>
+            പരിപാടികൾ
+        </a>
+    </li>
 
-        <li><a href="/ward-members"> Ward Members</a></li>
+    <li>
+        <a href="/circulars">
+            <i class="fa-solid fa-file-lines"></i>
+            സർക്കുലറുകൾ
+        </a>
+    </li>
 
-        <li><a href="/gallery"> Gallery</a></li>
-        <li>
-            <a href="/downloads">
-                <i class="fa-solid fa-download"></i>
-                Downloads
-            </a>
-        </li>
+    <li>
+        <a href="/about">
+            <i class="fa-solid fa-circle-info"></i>
+            പഞ്ചായത്തെക്കുറിച്ച്
+        </a>
+    </li>
 
-        <li><a href="/survey"> Survey</a></li>
+    <li>
+        <a href="/ward-members">
+            <i class="fa-solid fa-users"></i>
+            വാർഡ് അംഗങ്ങൾ
+        </a>
+    </li>
 
-        {% if session.get("citizen_id") %}
+    <li>
+        <a href="/gallery">
+            <i class="fa-solid fa-images"></i>
+            ഗാലറി
+        </a>
+    </li>
 
-            <li><a href="/dashboard"> Dashboard</a></li>
+    <li>
+        <a href="/downloads">
+            <i class="fa-solid fa-download"></i>
+            ഡൗൺലോഡുകൾ
+        </a>
+    </li>
 
-            <li><a href="/report"> Report Issue</a></li>
+    <li>
+        <a href="/survey">
+            <i class="fa-solid fa-square-poll-horizontal"></i>
+            സർവേകൾ
+        </a>
+    </li>
 
-            <li><a href="/my_complaints"> My Complaints</a></li>
+    {% if session.get("citizen_id") %}
 
-            <li><a href="/profile">👤 My Profile</a></li>
+    <li>
+        <a href="/dashboard">
+            <i class="fa-solid fa-gauge-high"></i>
+            ഡാഷ്ബോർഡ്
+        </a>
+    </li>
 
-            <li><a href="/logout">🚪 Logout</a></li>
+    <li>
+        <a href="/report">
+            <i class="fa-solid fa-pen-to-square"></i>
+            പരാതി നൽകുക
+        </a>
+    </li>
 
-        {% elif session.get("admin_id") %}
+    <li>
+        <a href="/my_complaints">
+            <i class="fa-solid fa-folder-open"></i>
+            എന്റെ പരാതികൾ
+        </a>
+    </li>
 
-            <li><a href="/admin">⚙ Admin Dashboard</a></li>
+    <li>
+        <a href="/profile">
+            <i class="fa-solid fa-user"></i>
+            എന്റെ പ്രൊഫൈൽ
+        </a>
+    </li>
 
-            <li><a href="/citizens">👥 Citizens</a></li>
+    <li>
+        <a href="/logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            പുറത്തുകടക്കുക
+        </a>
+    </li>
 
-            <li><a href="/admin_logout">🚪 Logout</a></li>
+    {% elif session.get("admin_id") %}
 
-        {% elif session.get("ward_member_id") %}
+    <li>
+        <a href="/admin">
+            <i class="fa-solid fa-user-shield"></i>
+            അഡ്മിൻ ഡാഷ്ബോർഡ്
+        </a>
+    </li>
 
-            <li><a href="/ward-dashboard">👥 Ward Dashboard</a></li>
+    <li>
+        <a href="/citizens">
+            <i class="fa-solid fa-users"></i>
+            പൗരന്മാർ
+        </a>
+    </li>
 
-            <li><a href="/ward-logout">🚪 Logout</a></li>
+    <li>
+        <a href="/admin_logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            പുറത്തുകടക്കുക
+        </a>
+    </li>
 
-        {% else %}
+    {% elif session.get("ward_member_id") %}
 
-            <li>
-                <a href="#" onclick="openLoginModal()">
-                    🔐 Login
-                </a>
-            </li>
+    <li>
+        <a href="/ward-dashboard">
+            <i class="fa-solid fa-user-group"></i>
+            വാർഡ് ഡാഷ്ബോർഡ്
+        </a>
+    </li>
 
-        {% endif %}
+    <li>
+        <a href="/ward-logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            പുറത്തുകടക്കുക
+        </a>
+    </li>
+    <li>
+        <a href="/ward-notes">
+            <i class="fa-solid fa-note-sticky"></i>
+            എന്റെ പ്രവർത്തന കുറിപ്പുകൾ
+        </a>
+    </li>
 
-    </ul>
+    {% else %}
 
-</div>
+    <li>
+        <a href="#" onclick="openLoginModal()">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            ലോഗിൻ
+        </a>
+    </li>
+
+    {% endif %}
+
+</ul>
+
+    </div>
+
+
+    </div>
 
 <!-- Login Modal -->
 
@@ -251,7 +350,7 @@
 
             <p>
                 <i class="fa-solid fa-phone"></i>
-                +91 98765 43210
+                +91 8157972189
             </p>
 
             <p>

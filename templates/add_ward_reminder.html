@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add Reminder
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h2>🔔 Add Reminder</h2>
+
+    <form method="POST">
+
+        <label>Reminder</label>
+
+        <textarea
+            name="reminder"
+            rows="5"
+            required></textarea>
+
+        <label>Reminder Date</label>
+
+        <input
+            type="date"
+            name="reminder_date"
+            required>
+
+        <button type="submit">
+            Save Reminder
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

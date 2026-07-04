@@ -34,7 +34,45 @@ Citizen Dashboard
     </a>
 
 </div>
+
+{% if ward_member %}
+
+       <div class="ward-member-card">
+
+    <img src="{{ url_for('static', filename='uploads/' + ward_member['photo']) }}"
+         alt="Ward Member">
+
+    <div class="ward-info">
+
+        <h2>👤 Your Ward Representative</h2>
+
+        <h3>{{ ward_member["name"] }}</h3>
+
+        <p>Ward Member • Ward {{ ward_member["ward_no"] }}</p>
+
+        <p>📞 {{ ward_member["phone"] }}</p>
+
+        <div class="member-buttons">
+
+            <a href="tel:{{ ward_member['phone'] }}" class="call-btn">
+                📞 Call
+            </a>
+
+            <a href="https://wa.me/91{{ ward_member['phone'] }}"
+               target="_blank"
+               class="whatsapp-btn">
+                💬 WhatsApp
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+        {% endif %}
     <div class="dashboard-cards">
+        
 
         <a href="/report" class="dashboard-card">
             <i class="fa-solid fa-pen-to-square"></i>

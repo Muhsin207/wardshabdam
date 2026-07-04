@@ -9,6 +9,129 @@ Ward Member Dashboard
 <div class="admin-container">
 
     <h2>👥 Ward {{ ward_no }} Dashboard</h2>
+    <div class="workspace">
+
+    <!-- Notes -->
+
+    <div class="workspace-card">
+
+        <h3>📝 എന്റെ പ്രവർത്തന കുറിപ്പുകൾ</h3>
+
+        <a href="/add-ward-note" class="workspace-btn">
+            ➕ Add Note
+        </a>
+
+        {% if notes %}
+
+            {% for note in notes %}
+
+                <div class="workspace-item">
+
+            <h4>{{ note["title"] }}</h4>
+
+            <p>
+
+                {{ note["note"][:60] }}
+
+                {% if note["note"]|length > 60 %}
+                    ...
+                {% endif %}
+
+            </p>
+
+            {% if note["note"]|length > 60 %}
+
+            <a href="/view-note/{{ note['id'] }}"
+                class="read-more-btn">
+
+                📖 Read More
+
+            </a>
+
+            {% endif %}
+
+            <small>{{ note["created_at"] }}</small>
+
+            <div class="note-actions">
+
+                <a href="/delete-ward-note/{{ note['id'] }}"
+                class="delete-btn"
+                onclick="return confirm('Delete this note?')">
+
+                    🗑 Delete
+
+                </a>
+
+            </div>
+
+        </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No notes available.</p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Reminders -->
+
+    <div class="workspace-card">
+
+        <h3>🔔 വരാനിരിക്കുന്ന ഓർമ്മപ്പെടുത്തലുകൾ</h3>
+        <p style="color:#666; margin-top:-10px;">Upcoming Reminders</p>
+
+            <a href="/add-ward-reminder" class="workspace-btn">
+                ➕ Add Reminder
+            </a>
+
+        {% if reminders %}
+
+            {% for reminder in reminders %}
+
+                <div class="workspace-item">
+
+            <h4>📅 {{ reminder["reminder"] }}</h4>
+
+            <small>
+                {{ reminder["reminder_date"] }}
+            </small>
+
+            <div class="note-actions">
+
+                <a href="/complete-reminder/{{ reminder['id'] }}"
+                    class="complete-btn">
+
+                    ✅ Done
+
+                </a>
+
+                <a href="/delete-reminder/{{ reminder['id'] }}"
+                class="delete-btn"
+                onclick="return confirm('Delete this reminder?')">
+
+                    🗑 Delete
+
+                </a>
+
+            </div>
+
+        </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No reminders today.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>
 <div class="stats">
 
     <div class="card total-card">

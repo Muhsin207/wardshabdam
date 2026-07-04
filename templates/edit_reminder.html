@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Edit Reminder
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h2>✏️ Edit Reminder</h2>
+
+    <form method="POST">
+
+        <label>Reminder</label>
+
+        <textarea
+            name="reminder"
+            rows="5"
+            required>{{ reminder["reminder"] }}</textarea>
+
+        <label>Reminder Date</label>
+
+        <input
+            type="date"
+            name="reminder_date"
+            value="{{ reminder['reminder_date'] }}"
+            required>
+
+        <button type="submit">
+
+            Update Reminder
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

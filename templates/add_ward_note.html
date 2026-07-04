@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add Work Note
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h2>📝 Add Work Note</h2>
+
+    <form method="POST">
+
+        <label>Title</label>
+
+        <input
+            type="text"
+            name="title"
+            required>
+
+        <label>Note</label>
+
+        <textarea
+            name="note"
+            rows="6"
+            required></textarea>
+
+        <button type="submit">
+            Save Note
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

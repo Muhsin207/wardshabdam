@@ -86,6 +86,29 @@ def home():
     """)
     ward_members = cursor.fetchall()
 
+    # Logged-in citizen's ward member
+    my_ward_member = None
+
+    if "citizen_id" in session:
+
+        cursor.execute(
+            "SELECT * FROM citizens WHERE id=?",
+            (session["citizen_id"],)
+        )
+
+        citizen = cursor.fetchone()
+
+        if citizen:
+
+            ward_no = citizen["ward"].replace("Ward ", "").strip()
+
+            cursor.execute(
+                "SELECT * FROM ward_members WHERE ward_no=?",
+                (ward_no,)
+            )
+
+            my_ward_member = cursor.fetchone()
+
     conn.close()
 
     return render_template(
@@ -95,8 +118,9 @@ def home():
         pending=pending,
         progress=progress,
         resolved=resolved,
-        ward_members=ward_members
-    )
+        ward_members=ward_members,
+        my_ward_member=my_ward_member
+)
 @app.route("/report", methods=["GET", "POST"])
 def report():
 
@@ -919,6 +943,20 @@ def dashboard():
     )
 
     citizen = cursor.fetchone()
+    # Get the logged-in citizen's ward member
+
+    ward_no = citizen["ward"].replace("Ward ", "").strip()
+
+    cursor.execute("""
+        SELECT *
+        FROM ward_members
+        WHERE ward_no = ?
+    """, (ward_no,))
+
+    ward_member = cursor.fetchone()
+
+    print("Citizen Ward:", citizen["ward"])
+    print("Ward Member:", ward_member)
 
     # Get unread notification count
     cursor.execute("""
@@ -935,6 +973,7 @@ def dashboard():
     return render_template(
         "dashboard.html",
         citizen=citizen,
+        ward_member=ward_member,
         notification_count=notification_count
     )
 @app.route("/notifications")
@@ -1987,6 +2026,36 @@ def ward_dashboard():
         ("Ward " + str(ward_no),)
     )
     resolved = cursor.fetchone()[0]
+    # ==========================
+    # Work Notes
+    # ==========================
+
+    cursor.execute("""
+    SELECT *
+    FROM ward_notes
+    WHERE ward_member_id=?
+    ORDER BY created_at DESC
+    LIMIT 3
+    """, (session["ward_member_id"],))
+
+    notes = cursor.fetchall()
+
+
+    # ==========================
+    # Upcoming Reminders
+    # ==========================
+
+    cursor.execute("""
+    SELECT *
+    FROM ward_reminders
+    WHERE ward_member_id=?
+    AND completed=0
+    AND reminder_date >= DATE('now')
+    ORDER BY reminder_date ASC
+    LIMIT 5
+    """, (session["ward_member_id"],))
+
+    reminders = cursor.fetchall()
 
     conn.close()
 
@@ -1997,7 +2066,9 @@ def ward_dashboard():
         total=total,
         pending=pending,
         progress=progress,
-        resolved=resolved
+        resolved=resolved,
+        notes=notes,
+        reminders=reminders
     )
 @app.route("/ward-edit/<int:id>", methods=["GET", "POST"])
 def ward_edit(id):
@@ -2520,6 +2591,226 @@ def circulars():
         search=search
     )
 
+@app.route("/ward-notes")
+def ward_notes():
 
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM ward_notes
+        WHERE ward_member_id=?
+        ORDER BY created_at DESC
+    """, (session["ward_member_id"],))
+
+    notes = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "ward_notes.html",
+        notes=notes
+    )
+@app.route("/add-ward-note", methods=["GET", "POST"])
+def add_ward_note():
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    if request.method == "POST":
+
+        title = request.form["title"]
+        note = request.form["note"]
+
+        conn = sqlite3.connect("database/wardshabdam.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO ward_notes
+            (ward_member_id, title, note)
+            VALUES (?, ?, ?)
+        """, (
+            session["ward_member_id"],
+            title,
+            note
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/ward-dashboard")
+
+    return render_template("add_ward_note.html")
+
+@app.route("/delete-ward-note/<int:id>")
+def delete_ward_note(id):
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM ward_notes
+        WHERE id=?
+        AND ward_member_id=?
+    """, (id, session["ward_member_id"]))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/ward-dashboard")
+@app.route("/add-ward-reminder", methods=["GET", "POST"])
+def add_ward_reminder():
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    if request.method == "POST":
+
+        reminder = request.form["reminder"]
+        reminder_date = request.form["reminder_date"]
+
+        conn = sqlite3.connect("database/wardshabdam.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO ward_reminders
+            (ward_member_id, reminder, reminder_date)
+            VALUES (?, ?, ?)
+        """, (
+            session["ward_member_id"],
+            reminder,
+            reminder_date
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/ward-dashboard")
+
+    return render_template("add_ward_reminder.html")
+
+@app.route("/complete-reminder/<int:id>")
+def complete_reminder(id):
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE ward_reminders
+        SET completed=1
+        WHERE id=?
+        AND ward_member_id=?
+    """, (id, session["ward_member_id"]))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/ward-dashboard")
+@app.route("/delete-reminder/<int:id>")
+def delete_reminder():
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM ward_reminders
+        WHERE id=?
+        AND ward_member_id=?
+    """, (id, session["ward_member_id"]))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/ward-dashboard")
+@app.route("/edit-reminder/<int:id>", methods=["GET", "POST"])
+def edit_reminder(id):
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        reminder = request.form["reminder"]
+        reminder_date = request.form["reminder_date"]
+
+        cursor.execute("""
+            UPDATE ward_reminders
+            SET reminder=?,
+                reminder_date=?
+            WHERE id=?
+            AND ward_member_id=?
+        """, (
+            reminder,
+            reminder_date,
+            id,
+            session["ward_member_id"]
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/ward-dashboard")
+
+    cursor.execute("""
+        SELECT *
+        FROM ward_reminders
+        WHERE id=?
+        AND ward_member_id=?
+    """, (
+        id,
+        session["ward_member_id"]
+    ))
+
+    reminder = cursor.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "edit_reminder.html",
+        reminder=reminder
+    )
+@app.route("/view-note/<int:id>")
+def view_note(id):
+
+    if "ward_member_id" not in session:
+        return redirect("/ward-login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM ward_notes
+        WHERE id=?
+        AND ward_member_id=?
+    """, (id, session["ward_member_id"]))
+
+    note = cursor.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "view_note.html",
+        note=note
+    )
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

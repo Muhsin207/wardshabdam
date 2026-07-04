@@ -286,3 +286,271 @@
     text-decoration:none;
     color:inherit;
 }
+.my-ward-card{
+
+    max-width:900px;
+
+    margin:40px auto;
+
+    background:white;
+
+    border-radius:20px;
+
+    text-align:center;
+
+    padding:35px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
+
+}
+
+.my-ward-card img{
+
+    width:130px;
+
+    height:130px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid #00bcd4;
+
+    margin:20px 0;
+
+}
+
+.my-ward-card h2{
+
+    color:#00796b;
+
+}
+
+.member-buttons{
+
+    margin-top:20px;
+
+}
+
+.call-btn,
+.whatsapp-btn{
+
+    display:inline-block;
+
+    margin:8px;
+
+    padding:12px 22px;
+
+    color:white;
+
+    text-decoration:none;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+}
+
+.call-btn{
+
+    background:#1565c0;
+
+}
+
+.whatsapp-btn{
+
+    background:#25D366;
+
+}
+/* ===============================
+   Ward Representative Card
+================================= */
+
+.top-ward-card{
+
+    max-width:1100px;
+
+    margin:30px auto;
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:30px;
+
+    padding:25px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+
+}
+
+.member-photo img{
+
+    width:140px;
+
+    height:140px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid #22c1dc;
+
+}
+
+.member-details{
+
+    flex:1;
+
+}
+
+.member-details h2{
+
+    color:#009688;
+
+}
+
+.member-buttons{
+
+    margin-top:20px;
+
+}
+
+.call-btn,
+.whatsapp-btn{
+
+    display:inline-block;
+
+    padding:10px 20px;
+
+    margin-right:10px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.call-btn{
+
+    background:#1565c0;
+
+}
+
+.whatsapp-btn{
+
+    background:#25D366;
+
+}
+/* ===============================
+   Ward Representative
+================================ */
+
+.ward-profile{
+
+    max-width:1100px;
+
+    margin:35px auto;
+
+    background:linear-gradient(135deg,#e8f5e9,#ffffff);
+
+    border-radius:22px;
+
+    padding:35px;
+
+    text-align:center;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
+
+}
+
+.ward-profile-header h2{
+
+    color:#0b7285;
+
+    margin-bottom:5px;
+
+}
+
+.ward-profile-header p{
+
+    color:#666;
+
+    margin-bottom:25px;
+
+}
+
+.ward-profile img{
+
+    width:150px;
+
+    height:150px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:6px solid #0b7285;
+
+}
+
+.ward-profile h3{
+
+    margin-top:20px;
+
+    color:#0b7285;
+
+}
+
+.ward-profile p{
+
+    margin-top:8px;
+
+    font-size:17px;
+
+}
+
+.ward-buttons{
+
+    margin-top:25px;
+
+}
+
+.call-btn,
+.whatsapp-btn{
+
+    display:inline-block;
+
+    padding:12px 24px;
+
+    margin:8px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.call-btn{
+
+    background:#1565c0;
+
+}
+
+.whatsapp-btn{
+
+    background:#25D366;
+
+}

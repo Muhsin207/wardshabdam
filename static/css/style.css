@@ -56,6 +56,20 @@
 
     box-shadow:0 8px 20px rgba(0,0,0,.15);
 }
+.menu-title{
+    display:block;
+    font-size:16px;
+    font-weight:700;
+    color:#ffffff;
+}
+
+.menu-subtitle{
+    display:block;
+    font-size:12px;
+    color:#d9d9d9;
+    margin-top:2px;
+}
+
 
 .logo-section{
     display:flex;
@@ -981,5 +995,191 @@ body{
     .menu-btn{
         font-size:34px;
     }
+
+}
+/* ===========================
+   Ward Workspace
+=========================== */
+
+.workspace{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+    margin:35px 0;
+
+}
+
+.workspace-card{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+}
+
+.workspace-card{
+
+    max-height:420px;
+
+    overflow-y:auto;
+
+}
+
+.workspace-btn{
+    display:block;
+    width:100%;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.workspace-btn:hover{
+
+    background:#0b5ed7;
+
+}
+
+.workspace-item{
+
+    background:#f8f9fa;
+
+    padding:15px;
+
+    border-left:5px solid #0d6efd;
+
+    border-radius:10px;
+
+    margin-bottom:15px;
+
+    word-wrap:break-word;
+
+    overflow-wrap:break-word;
+
+}
+
+.workspace-item strong{
+
+    display:block;
+
+    color:#222;
+
+    margin-bottom:5px;
+
+}
+
+.workspace-item p{
+
+    margin:0;
+
+    color:#666;
+
+}
+
+@media(max-width:900px){
+
+.workspace{
+
+grid-template-columns:1fr;
+
+}
+}
+.note-actions{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:15px;
+
+}
+
+.edit-btn{
+
+    background:#ffc107;
+
+    color:#000;
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+}
+
+.delete-btn{
+
+    background:#dc3545;
+
+    color:#fff;
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+}
+
+.edit-btn:hover{
+
+    background:#e0a800;
+
+}
+
+.delete-btn:hover{
+
+    background:#bb2d3b;
+
+}
+.complete-btn{
+
+    background:#28a745;
+
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+}
+
+.complete-btn:hover{
+
+    background:#218838;
+
+}
+.read-more-btn{
+
+    display:inline-block;
+
+    margin-top:10px;
+
+    color:#0d6efd;
+
+    font-weight:bold;
+
+    text-decoration:none;
+
+}
+
+.read-more-btn:hover{
+
+    text-decoration:underline;
 
 }

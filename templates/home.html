@@ -6,20 +6,87 @@ Home | Ward Shabdam
 
 {% block content %}
 
+{% if my_ward_member %}
+
+<div class="ward-profile">
+
+    <div class="ward-profile-header">
+
+       <h2>👋 സ്വാഗതം, {{ session["citizen_name"] }}</h2>
+
+<p>
+    <strong>നിങ്ങളുടെ വാർഡ് അംഗം</strong><br>
+    <small>Your Ward Representative</small>
+</p>
+
+    </div>
+
+    <div class="ward-profile-body">
+
+        <img
+            src="{{ url_for('static', filename='uploads/' + my_ward_member['photo']) }}"
+            alt="Ward Member">
+
+        <h3>{{ my_ward_member["name"] }}</h3>
+
+        <p>
+    വാർഡ് അംഗം • വാർഡ് {{ my_ward_member["ward_no"] }}<br>
+    <small>Ward Member • Ward {{ my_ward_member["ward_no"] }}</small>
+</p>
+
+        <p>📞 {{ my_ward_member["phone"] }}</p>
+
+        {% if my_ward_member["email"] %}
+        <p>✉️ {{ my_ward_member["email"] }}</p>
+        {% endif %}
+
+        <div class="ward-buttons">
+
+            <a href="tel:{{ my_ward_member['phone'] }}"
+               class="call-btn">
+
+                📞 വിളിക്കുക
+                <br>
+                <small>Call</small>
+
+            </a>
+
+            <a href="https://wa.me/91{{ my_ward_member['phone'] }}"
+               target="_blank"
+               class="whatsapp-btn">
+
+                💬 വാട്ട്സ്ആപ്പ്
+                <br>
+                <small>WhatsApp</small>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
 <section class="hero">
 
     <div class="overlay">
 
-        <h2>വാർഡ് ശബ്ദം</h2>
+       <h2>വാർഡ് ശബ്ദം</h2>
 
-        <h3>Thachanattukkara Grama Panchayat</h3>
+        <h3>തച്ചനാട്ടുകര ഗ്രാമ പഞ്ചായത്ത്</h3>
 
-        <h4>തച്ചനാട്ടുകര ഗ്രാമ പഞ്ചായത്ത്</h4>
+        <h4>Thachanattukkara Grama Panchayat</h4>
 
         <p>
-            Together for a Better Ward
+
+            ജനങ്ങളോടൊപ്പം വികസനത്തിനായി
+
             <br>
-            Empowering Citizens • Strengthening Communities
+
+            <small>Together for a Better Community</small>
+
         </p>
 
     <div class="hero-buttons">
@@ -30,8 +97,9 @@ Home | Ward Shabdam
         </div>
 
         <div class="card-text">
-            <h3>Report an Issue</h3>
-            <p>Submit your complaints and suggestions</p>
+            <h3>📝 പരാതി നൽകുക</h3>
+
+            <p>Report complaints and suggestions</p>
         </div>
 
         <div class="card-arrow">
@@ -46,8 +114,9 @@ Home | Ward Shabdam
         </div>
 
         <div class="card-text">
-            <h3>Programs</h3>
-            <p>View all programs and events</p>
+            <h3>📅 പരിപാടികൾ</h3>
+
+            <p>View Panchayat programs and events</p>
         </div>
 
         <div class="card-arrow">
@@ -62,7 +131,8 @@ Home | Ward Shabdam
         </div>
 
         <div class="card-text">
-            <h3>My Complaints</h3>
+            <h3>📂 എന്റെ പരാതികൾ</h3>
+
             <p>Track your submitted complaints</p>
         </div>
 
@@ -81,31 +151,55 @@ Home | Ward Shabdam
 
         <div class="stat-card">
             <h2>{{ total }}</h2>
-            <p>Total</p>
+           <p>
+            ആകെ
+            <br>
+            <small>Total</small>
+            </p>
         </div>
 
         <div class="stat-card">
             <h2>{{ pending }}</h2>
-            <p>Pending</p>
+            <p>
+            തീർപ്പാക്കാനുള്ളത്
+            <br>
+            <small>Pending</small>
+            </p>
         </div>
 
         <div class="stat-card">
             <h2>{{ progress }}</h2>
-            <p>In Progress</p>
+            <p>
+            നടപടിയിൽ
+            <br>
+            <small>In Progress</small>
+            </p>
         </div>
 
         <div class="stat-card">
             <h2>{{ resolved }}</h2>
-            <p>Resolved</p>
+            <p>
+            പരിഹരിച്ചത്
+            <br>
+            <small>Resolved</small>
+            </p>
         </div>
 
     </div>
 
 </section>
 
-<section class="announcement-section">
+        <section class="announcement-section">
 
-    <h2>📢 Latest Announcements</h2>
+            <h2>
+
+        📢 അറിയിപ്പുകൾ
+
+        <br>
+
+        <small>Latest Announcements</small>
+
+        </h2>
 
     <div class="announcement-grid">
 
@@ -124,14 +218,22 @@ Home | Ward Shabdam
             </p>
 
             <a href="/announcement/{{ item.id }}" class="read-more-btn">
-                Read More →
+                കൂടുതൽ വായിക്കുക →
+
+                <br>
+
+                <small>Read More</small>
             </a>
 
         </div>
 
         {% else %}
 
-        <p>No announcements available.</p>
+        അറിയിപ്പുകൾ ലഭ്യമല്ല.
+
+        <br>
+
+        <small>No announcements available.</small>
 
         {% endfor %}
 
@@ -142,10 +244,25 @@ Home | Ward Shabdam
 
 <section class="services">
 
-    <h2>Our Services</h2>
+        <h2>
 
-    <p>Services provided by Thachanattukkara Grama Panchayat</p>
+    ഞങ്ങളുടെ സേവനങ്ങൾ
 
+    <br>
+
+    <small>Our Services</small>
+
+    </h2>
+
+    <p>
+
+    തച്ചനാട്ടുകര ഗ്രാമ പഞ്ചായത്ത് നൽകുന്ന സേവനങ്ങൾ
+
+    <br>
+
+    <small>Services provided by Thachanattukkara Grama Panchayat</small>
+
+    </p>
     <div class="service-grid">
 
         <div class="service-card">

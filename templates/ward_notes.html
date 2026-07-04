@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Work Notes
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2>📝 എന്റെ പ്രവർത്തന കുറിപ്പുകൾ</h2>
+
+    <p>Work Notes</p>
+
+    <hr>
+
+    {% if notes %}
+
+        {% for note in notes %}
+
+            <div class="note-card">
+
+                <h3>{{ note["title"] }}</h3>
+
+                <p>{{ note["note"] }}</p>
+
+                <small>{{ note["created_at"] }}</small>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No notes available.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
