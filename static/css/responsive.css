@@ -2,61 +2,37 @@
    Mobile Responsive
 =========================== */
 
-@media (max-width: 768px) {
+@media (max-width:768px){
 
-    /* Body */
-    body{
-        overflow-x:hidden;
-    }
-
-    /* Container */
-    .container,
-    .admin-container,
-    .view-container{
-        width:95%;
-        margin:auto;
-    }
-
-    /* Navbar */
-    .navbar{
-        flex-direction:column;
-        align-items:center;
-        padding:15px;
+    .top-header{
+        padding:10px 15px;
+        border-radius:12px;
     }
 
     .logo{
-        flex-direction:column;
-        text-align:center;
+        width:42px;
+        height:42px;
     }
 
-    .logo img{
-        width:70px;
-        height:70px;
+    .logo-text h2{
+        font-size:20px;
+        line-height:1.1;
     }
 
-    .logo h2{
-        font-size:24px;
+    .logo-text small{
+        font-size:11px;
     }
 
-    .logo p{
-        font-size:14px;
+    .menu-btn{
+        font-size:34px;
+        padding:5px;
     }
 
-    .nav-links{
-        flex-direction:column;
-        width:100%;
-        margin-top:15px;
+    .navbar{
+        padding:10px 0;
     }
 
-    .nav-links li{
-        width:100%;
-    }
-
-    .nav-links a{
-        display:block;
-        padding:12px;
-        text-align:center;
-    }
+}
 
     /* Hero Section */
 
@@ -115,4 +91,3 @@
         height:auto;
     }
 
-}
