@@ -12,7 +12,7 @@ class WardShabdamApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Ward Shabdam",
+      title: "Wardhabdam",
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),

@@ -1,6 +1,6 @@
-# Ward Shabdam
+# Wardhabdam
 
-Flutter client for Ward Shabdam citizen services.
+Flutter client for Wardhabdam citizen services.
 
 ## Development
 
