@@ -20,4 +20,5 @@ ward_shabdam_app/android/.gradle/
 ward_shabdam_app/android/local.properties
 ward_shabdam_app/android/key.properties
 ward_shabdam_app/android/*.jks
+ward_shabdam_app/android/*.invalid
 ward_shabdam_app/android/*.keystore

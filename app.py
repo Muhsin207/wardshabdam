@@ -36,9 +36,7 @@ app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = os.getenv("WARD_SHABDAM_MAIL_USERNAME", "")
 app.config["MAIL_PASSWORD"] = os.getenv("WARD_SHABDAM_MAIL_PASSWORD", "")
 
-secret_key = os.getenv("WARD_SHABDAM_SECRET_KEY") or os.getenv("SECRET_KEY")
-if not secret_key:
-    raise RuntimeError("Set WARD_SHABDAM_SECRET_KEY before starting the backend.")
+secret_key = os.getenv("WARD_SHABDAM_SECRET_KEY") or os.getenv("SECRET_KEY") or "dev-secret-key-change-me"
 app.config["SECRET_KEY"] = secret_key
 
 mail = Mail(app)
@@ -223,7 +221,7 @@ def report():
 
         try:
             msg = Message(
-                subject="Wardhabdam - Complaint Submitted Successfully",
+                subject="Wardshabdam - Complaint Submitted Successfully",
                 sender=app.config["MAIL_USERNAME"],
                 recipients=[session["email"]]
             )
@@ -245,7 +243,7 @@ Please keep this Tracking ID for future reference.
 
 Thank you for helping improve your Panchayath.
 
-Wardhabdam
+Wardshabdam
 """
 
             send_configured_email(msg)
@@ -276,7 +274,7 @@ Category     : {category}
 Description:
 {description}
 
-Please log in to Wardhabdam to review this complaint.
+Please log in to Wardshabdam to review this complaint.
 """
 
                 send_configured_email(ward_msg)
@@ -477,7 +475,7 @@ def download_pdf():
 
     styles =getSampleStyleSheet()
 
-    title = Paragraph("<b>WARDHABDAM - Complaint Report</b>", styles["Heading1"])
+    title = Paragraph("<b>WARDSHABDAM - Complaint Report</b>", styles["Heading1"])
 
     elements.append(title)
 
@@ -622,13 +620,13 @@ def edit(id):
         if citizen and citizen["email"]:
 
                 if status == "Resolved":
-                    subject = "🟢 Wardhabdam - Complaint Resolved"
+                    subject = "🟢 Wardshabdam - Complaint Resolved"
 
                 elif status == "In Progress":
-                    subject = "🟡 Wardhabdam - Complaint In Progress"
+                    subject = "🟡 Wardshabdam - Complaint In Progress"
 
                 else:
-                    subject = "📋 Wardhabdam - Complaint Updated"
+                    subject = "📋 Wardshabdam - Complaint Updated"
 
                 msg = Message(
                     subject=subject,
@@ -657,7 +655,7 @@ Admin Reply:
 
 Thank you for helping improve Thachanattukkara Grama Panchayat.
 
-Wardhabdam
+Wardshabdam
 """
 
                 elif status == "In Progress":
@@ -681,7 +679,7 @@ Admin Reply:
 
 Thank you for your patience.
 
-Wardhabdam
+Wardshabdam
 """
 
                 else:
@@ -701,7 +699,7 @@ Status       : {status}
 Admin Reply:
 {admin_reply}
 
-Wardhabdam
+Wardshabdam
 """
                 send_configured_email(msg)
 
@@ -1296,9 +1294,9 @@ def api_forgot_password():
     conn.commit()
     conn.close()
     sent = send_configured_email(Message(
-        subject="Wardhabdam password reset code",
+        subject="Wardshabdam password reset code",
         recipients=[citizen["email"]],
-        body=f"Your Wardhabdam password reset code is {code}. It expires in 10 minutes.",
+        body=f"Your Wardshabdam password reset code is {code}. It expires in 10 minutes.",
     ))
     if not sent:
         return jsonify({"success": False, "message": "Email service is not configured"}), 503
@@ -1620,7 +1618,7 @@ def add_announcement():
         title = request.form["title"]
         description = request.form["description"]
 
-        photo = request.files["photo"]
+        photo = request.files.get("photo")
 
         filename = ""
 
@@ -1780,7 +1778,7 @@ def add_program():
         title = request.form["title"]
         description = request.form["description"]
 
-        photo = request.files["photo"]
+        photo = request.files.get("photo")
 
         filename = ""
 
@@ -1995,7 +1993,7 @@ def test_email():
 
     try:
         msg = Message(
-            subject="Wardhabdam Test Email",
+            subject="Wardshabdam Test Email",
             sender=app.config["MAIL_USERNAME"],
             recipients=["YOUR_PERSONAL_EMAIL@gmail.com"]  # Replace with your email
         )
@@ -2003,16 +2001,16 @@ def test_email():
         msg.body = """
 Hello,
 
-This is a test email from Wardhabdam.
+This is a test email from Wardshabdam.
 
 Congratulations!
 Your email configuration is working successfully.
 
-Wardhabdam
+Wardshabdam
 """
 
         if not send_configured_email(msg):
-            return "Email configuration is missing. Set the Wardhabdam mail environment variables first.", 503
+            return "Email configuration is missing. Set the Wardshabdam mail environment variables first.", 503
 
         return "✅ Test email sent successfully!"
 
@@ -2053,29 +2051,44 @@ def add_ward_member():
         designation = request.form["designation"]
         phone = request.form["phone"]
         email = request.form["email"]
+        username = (request.form.get("username") or "").strip()
+        password = request.form.get("password") or ""
 
-        photo = request.files["photo"]
+        if not username or not password:
+            return "Username and password are required for ward member login.", 400
+
+        photo = request.files.get("photo")
 
         filename = ""
 
         if photo and photo.filename != "":
             filename = secure_filename(photo.filename)
             photo.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        print("DB PATH =", os.path.abspath("database/wardshabdam.db"))
+
         conn = sqlite3.connect("database/wardshabdam.db")
         cursor = conn.cursor()
 
+        existing = cursor.execute(
+            "SELECT id FROM ward_members WHERE username=?",
+            (username,)
+        ).fetchone()
+        if existing:
+            conn.close()
+            return "Username already exists. Please choose another one.", 409
+
         cursor.execute("""
             INSERT INTO ward_members
-            (ward_no, name, designation, phone, email, photo)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (ward_no, name, designation, phone, email, photo, username, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             ward_no,
             name,
             designation,
             phone,
             email,
-            filename
+            filename,
+            username,
+            generate_password_hash(password)
         ))
 
         conn.commit()
@@ -2381,7 +2394,7 @@ def add_gallery():
         description = request.form["description"]
         event_date = request.form["event_date"]
 
-        photo = request.files["photo"]
+        photo = request.files.get("photo")
 
         filename = ""
 
@@ -2466,34 +2479,36 @@ def ward_login():
 
     if request.method == "POST":
 
-        username = request.form["username"]
-        password = request.form["password"]
+        username = (request.form.get("username") or "").strip()
+        password = request.form.get("password") or ""
 
         conn = sqlite3.connect("database/wardshabdam.db")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        print("Username entered:", username)
-        print("Password entered:", password)
-        cursor.execute("""
-            SELECT *
-            FROM ward_members
-            WHERE username=? AND password=?
-        """, (
-            username,
-            password
-        ))
+        cursor.execute(
+            "SELECT * FROM ward_members WHERE username=?",
+            (username,)
+        )
 
         member = cursor.fetchone()
-
         conn.close()
 
         if member:
+            stored_password = member["password"] or ""
+            password_valid = False
+            if stored_password:
+                try:
+                    password_valid = check_password_hash(stored_password, password)
+                except ValueError:
+                    password_valid = stored_password == password
+            else:
+                password_valid = False
 
+        if member and password_valid:
             session["ward_member_id"] = member["id"]
             session["ward_name"] = member["name"]
             session["ward_no"] = member["ward_no"]
-
             return redirect("/ward-dashboard")
 
         return """
@@ -2666,7 +2681,7 @@ def ward_edit(id):
             try:
 
                 msg = Message(
-                    subject="Wardhabdam - Complaint Updated",
+                    subject="Wardshabdam - Complaint Updated",
                     sender=app.config["MAIL_USERNAME"],
                     recipients=[citizen["email"]]
                 )
@@ -2689,7 +2704,7 @@ Ward Member Reply:
 {reply}
 
 Thank you,
-Wardhabdam
+Wardshabdam
 """
 
                 send_configured_email(msg)
@@ -2730,7 +2745,7 @@ def add_download():
         category = request.form["category"]
         description = request.form["description"]
 
-        pdf = request.files["pdf"]
+        pdf = request.files.get("pdf")
 
         filename = ""
 
@@ -2931,7 +2946,7 @@ def add_circular():
 
         important = 1 if "important" in request.form else 0
 
-        pdf = request.files["pdf"]
+        pdf = request.files.get("pdf")
 
         filename = ""
 

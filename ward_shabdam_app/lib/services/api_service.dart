@@ -63,6 +63,8 @@ class ApiService {
     try {
       final response = await http.get(_uri(path)).timeout(requestTimeout);
       return _decode(response);
+    } on ApiException {
+      rethrow;
     } on TimeoutException {
       throw const ApiException('The request timed out');
     } on http.ClientException {
@@ -82,6 +84,8 @@ class ApiService {
           )
           .timeout(requestTimeout);
       return _decode(response);
+    } on ApiException {
+      rethrow;
     } on TimeoutException {
       throw const ApiException('The request timed out');
     } on http.ClientException {

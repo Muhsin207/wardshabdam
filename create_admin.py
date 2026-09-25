@@ -5,7 +5,7 @@ conn = sqlite3.connect("database/wardshabdam.db")
 cursor = conn.cursor()
 
 username = "mc1011"
-password = "mm1015"
+password = "mm1011"
 
 hashed_password = generate_password_hash(password)
 

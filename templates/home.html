@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Home | Wardhabdam
+Home | Wardshabdam
 {% endblock %}
 
 {% block content %}
@@ -143,6 +143,11 @@ Home | Wardhabdam
 
 </div>
 </section>
+
+<div class="welcome-gallery">
+    <img class="panchayat-photo" src="{{ url_for('static', filename='images/banner.jpg') }}" alt="Panchayat Photo">
+    <img class="old-photo" src="{{ url_for('static', filename='images/hero.png') }}" alt="Old Welcome Photo">
+</div>
 
 <!-- Statistics -->
 <section class="stats-section">
