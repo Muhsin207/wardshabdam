@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Wardhabdam"),
+        title: const Text("Wardshabdam"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

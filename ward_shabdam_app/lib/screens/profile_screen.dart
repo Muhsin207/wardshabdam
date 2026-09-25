@@ -176,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.info),
-                title: const Text('About Wardhabdam'),
+                title: const Text('About Wardshabdam'),
                 trailing: const Icon(Icons.arrow_forward_ios),
               ),
             ),

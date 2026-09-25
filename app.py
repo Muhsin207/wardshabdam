@@ -223,7 +223,7 @@ def report():
 
         try:
             msg = Message(
-                subject="Wardhabdam - Complaint Submitted Successfully",
+                subject="Wardshabdam - Complaint Submitted Successfully",
                 sender=app.config["MAIL_USERNAME"],
                 recipients=[session["email"]]
             )
@@ -245,7 +245,7 @@ Please keep this Tracking ID for future reference.
 
 Thank you for helping improve your Panchayath.
 
-Wardhabdam
+Wardshabdam
 """
 
             send_configured_email(msg)
@@ -276,7 +276,7 @@ Category     : {category}
 Description:
 {description}
 
-Please log in to Wardhabdam to review this complaint.
+Please log in to Wardshabdam to review this complaint.
 """
 
                 send_configured_email(ward_msg)
@@ -477,7 +477,7 @@ def download_pdf():
 
     styles =getSampleStyleSheet()
 
-    title = Paragraph("<b>WARDHABDAM - Complaint Report</b>", styles["Heading1"])
+    title = Paragraph("<b>WARDSHABDAM - Complaint Report</b>", styles["Heading1"])
 
     elements.append(title)
 
@@ -622,13 +622,13 @@ def edit(id):
         if citizen and citizen["email"]:
 
                 if status == "Resolved":
-                    subject = "🟢 Wardhabdam - Complaint Resolved"
+                    subject = "🟢 Wardshabdam - Complaint Resolved"
 
                 elif status == "In Progress":
-                    subject = "🟡 Wardhabdam - Complaint In Progress"
+                    subject = "🟡 Wardshabdam - Complaint In Progress"
 
                 else:
-                    subject = "📋 Wardhabdam - Complaint Updated"
+                    subject = "📋 Wardshabdam - Complaint Updated"
 
                 msg = Message(
                     subject=subject,
@@ -657,7 +657,7 @@ Admin Reply:
 
 Thank you for helping improve Thachanattukkara Grama Panchayat.
 
-Wardhabdam
+Wardshabdam
 """
 
                 elif status == "In Progress":
@@ -681,7 +681,7 @@ Admin Reply:
 
 Thank you for your patience.
 
-Wardhabdam
+Wardshabdam
 """
 
                 else:
@@ -701,7 +701,7 @@ Status       : {status}
 Admin Reply:
 {admin_reply}
 
-Wardhabdam
+Wardshabdam
 """
                 send_configured_email(msg)
 
@@ -1296,9 +1296,9 @@ def api_forgot_password():
     conn.commit()
     conn.close()
     sent = send_configured_email(Message(
-        subject="Wardhabdam password reset code",
+        subject="Wardshabdam password reset code",
         recipients=[citizen["email"]],
-        body=f"Your Wardhabdam password reset code is {code}. It expires in 10 minutes.",
+        body=f"Your Wardshabdam password reset code is {code}. It expires in 10 minutes.",
     ))
     if not sent:
         return jsonify({"success": False, "message": "Email service is not configured"}), 503
@@ -1995,7 +1995,7 @@ def test_email():
 
     try:
         msg = Message(
-            subject="Wardhabdam Test Email",
+            subject="Wardshabdam Test Email",
             sender=app.config["MAIL_USERNAME"],
             recipients=["YOUR_PERSONAL_EMAIL@gmail.com"]  # Replace with your email
         )
@@ -2003,16 +2003,16 @@ def test_email():
         msg.body = """
 Hello,
 
-This is a test email from Wardhabdam.
+This is a test email from Wardshabdam.
 
 Congratulations!
 Your email configuration is working successfully.
 
-Wardhabdam
+Wardshabdam
 """
 
         if not send_configured_email(msg):
-            return "Email configuration is missing. Set the Wardhabdam mail environment variables first.", 503
+            return "Email configuration is missing. Set the Wardshabdam mail environment variables first.", 503
 
         return "✅ Test email sent successfully!"
 
@@ -2666,7 +2666,7 @@ def ward_edit(id):
             try:
 
                 msg = Message(
-                    subject="Wardhabdam - Complaint Updated",
+                    subject="Wardshabdam - Complaint Updated",
                     sender=app.config["MAIL_USERNAME"],
                     recipients=[citizen["email"]]
                 )
@@ -2689,7 +2689,7 @@ Ward Member Reply:
 {reply}
 
 Thank you,
-Wardhabdam
+Wardshabdam
 """
 
                 send_configured_email(msg)
