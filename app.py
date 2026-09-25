@@ -6,14 +6,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from tabnanny import check
 
 
-from flask import Flask, render_template, request, redirect, session, flash, send_file
+from flask import Flask, render_template, request, redirect, session, flash, send_file,jsonify
 import sqlite3
 import os
+import secrets
+import sys
 
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from werkzeug.utils import secure_filename
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, base_dir)
+sys.path.insert(0, os.path.join(base_dir, "database"))
+
+from database import wardshabdam
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/uploads"
@@ -25,22 +33,34 @@ app.config["DOCUMENT_FOLDER"] = "static/documents"
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "wardshabdam@gmail.com"
-app.config["MAIL_PASSWORD"] = "qaabaweousmmsrck"
+app.config["MAIL_USERNAME"] = os.getenv("WARD_SHABDAM_MAIL_USERNAME", "")
+app.config["MAIL_PASSWORD"] = os.getenv("WARD_SHABDAM_MAIL_PASSWORD", "")
+
+secret_key = os.getenv("WARD_SHABDAM_SECRET_KEY") or os.getenv("SECRET_KEY")
+if not secret_key:
+    raise RuntimeError("Set WARD_SHABDAM_SECRET_KEY before starting the backend.")
+app.config["SECRET_KEY"] = secret_key
 
 mail = Mail(app)
-ADMIN_EMAIL = "wardshabdam@gmail.com"
+ADMIN_EMAIL = os.getenv("WARD_SHABDAM_ADMIN_EMAIL", app.config["MAIL_USERNAME"])
+
+def send_configured_email(message):
+    if not app.config["MAIL_USERNAME"] or not app.config["MAIL_PASSWORD"]:
+        return False
+    mail.send(message)
+    return True
 
 print("App file:", app.root_path)
 print("Running app.py")
 print("Document folder:", app.config.get("DOCUMENT_FOLDER"))
 print("Templates folder:", app.template_folder)
-app.secret_key = "wardshabdam2026"
 def admin_required():
-
     if "admin_id" not in session:
-        return redirect("/admin_login")
+        # If admin is not logged in, redirect to admin login page
+        flash("Please log in as admin to access this page.", "warning")
+        return redirect("/admin/login")
 
+    # admin is present
     return None
 UPLOAD_FOLDER = "static/uploads"
 @app.route("/admin_logout")
@@ -129,12 +149,16 @@ def report():
 
     if request.method == "POST":
 
-        name = request.form["name"]
-        mobile = request.form["mobile"]
-        ward = request.form["ward"]
-        category = request.form["category"]
-        description = request.form["description"]
-        photo = request.files["photo"]
+        name = (request.form.get("name") or session.get("citizen_name") or "").strip()
+        mobile = (request.form.get("mobile") or session.get("mobile") or "").strip()
+        ward = (request.form.get("ward") or session.get("ward") or "").strip()
+        category = (request.form.get("category") or "").strip()
+        description = (request.form.get("description") or "").strip()
+        photo = request.files.get("photo")
+
+        if not name or not mobile or not ward or not category or not description:
+            flash("Please complete all complaint fields before submitting.", "warning")
+            return redirect("/report")
 
         filename = ""
 
@@ -164,7 +188,6 @@ def report():
         ))
 
         conn.commit()
-        # Get the complaint ID that was just created
         complaint_id = cursor.lastrowid
         tracking_id = f"WS-2026-{complaint_id:06d}"
 
@@ -185,8 +208,7 @@ def report():
         """, (ward,))
 
         ward_member = cursor.fetchone()
-       
-        # Save notification
+
         cursor.execute("""
         INSERT INTO notifications
         (citizen_id, title, message)
@@ -196,7 +218,6 @@ def report():
         "Complaint Submitted",
         "Your complaint has been submitted successfully. We will review it soon."
     ))
-
 
         conn.commit()
 
@@ -227,7 +248,7 @@ Thank you for helping improve your Panchayath.
 Ward Shabdam
 """
 
-            mail.send(msg)
+            send_configured_email(msg)
 
         except Exception as e:
             print("Citizen Email Error:", e)
@@ -258,7 +279,7 @@ Description:
 Please log in to Ward Shabdam to review this complaint.
 """
 
-                mail.send(ward_msg)
+                send_configured_email(ward_msg)
 
         except Exception as e:
             print("Ward Member Email Error:", e)
@@ -286,7 +307,7 @@ Description:
 Please log in to the Admin Dashboard to review this complaint.
 """
 
-            mail.send(admin_msg)
+            send_configured_email(admin_msg)
 
         except Exception as e:
             print("Admin Email Error:", e)
@@ -296,8 +317,6 @@ Please log in to the Admin Dashboard to review this complaint.
         flash("Complaint submitted successfully!", "success")
 
         return redirect("/dashboard")
-
-    # ---------- GET REQUEST ----------
 
     conn = sqlite3.connect("database/wardshabdam.db")
     conn.row_factory = sqlite3.Row
@@ -433,7 +452,7 @@ def download_pdf():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id,name,ward,category,status
+        SELECT id,tracking_id,name,ward,category,status
         FROM complaints
         ORDER BY id DESC
     """)
@@ -684,7 +703,7 @@ Admin Reply:
 
 Ward Shabdam
 """
-                mail.send(msg)
+                send_configured_email(msg)
 
         conn.close()
 
@@ -832,6 +851,486 @@ def login():
 
     return render_template("login.html")
 
+from flask import jsonify
+@app.route("/api/login", methods=["POST"])
+def api_login():
+
+    data = request.get_json()
+
+    mobile = data.get("mobile")
+    password = data.get("password")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM citizens WHERE mobile=?",
+        (mobile,)
+    )
+
+    citizen = cursor.fetchone()
+    conn.close()
+
+    if citizen and check_password_hash(citizen["password"], password):
+
+        return jsonify({
+            "success": True,
+            "id": citizen["id"],
+            "fullname": citizen["fullname"],
+            "mobile": citizen["mobile"],
+            "email": citizen["email"],
+            "ward": citizen["ward"]
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Invalid Mobile Number or Password"
+    }), 401
+
+@app.route("/api/register", methods=["POST"])
+def api_register():
+    data = request.get_json() or {}
+    fullname = (data.get("fullname") or "").strip()
+    mobile = (data.get("mobile") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    ward = (data.get("ward") or "").strip()
+    password = data.get("password") or ""
+    confirm_password = data.get("confirm_password") or ""
+    if not all([fullname, mobile, email, ward, password]):
+        return jsonify({"success": False, "message": "All fields are required"}), 400
+    if password != confirm_password:
+        return jsonify({"success": False, "message": "Passwords do not match"}), 400
+    if len(password) < 8:
+        return jsonify({"success": False, "message": "Password must be at least 8 characters"}), 400
+
+    conn = wardshabdam.get_connection()
+    existing = conn.execute("SELECT id FROM citizens WHERE mobile=?", (mobile,)).fetchone()
+    if existing:
+        conn.close()
+        return jsonify({"success": False, "message": "Mobile number already registered"}), 409
+    conn.execute("""
+        INSERT INTO citizens (fullname, mobile, email, ward, password)
+        VALUES (?, ?, ?, ?, ?)
+    """, (fullname, mobile, email, ward, generate_password_hash(password)))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Registration successful"}), 201
+@app.route("/api/submit_complaint", methods=["POST"])
+def api_submit_complaint():
+
+    data = request.get_json()
+
+    name = data.get("name")
+    mobile = data.get("mobile")
+    ward = data.get("ward")
+    category = data.get("category")
+    description = data.get("description")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO complaints
+        (name, mobile, ward, category, description, status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        name,
+        mobile,
+        ward,
+        category,
+        description,
+        "Pending"
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message": "Complaint submitted successfully."
+    })
+# ---------------- MY COMPLAINTS API ----------------
+
+@app.route('/api/my_complaints/<mobile>', methods=['GET'])
+def api_my_complaints(mobile):
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            category,
+            description,
+            ward,
+            status
+        FROM complaints
+        WHERE mobile = ?
+        ORDER BY id DESC
+    """, (mobile,))
+
+    complaints = cursor.fetchall()
+    conn.close()
+
+    result = []
+
+    for complaint in complaints:
+        result.append({
+            "id": complaint["id"],
+            "category": complaint["category"],
+            "description": complaint["description"],
+            "ward": complaint["ward"],
+            "status": complaint["status"]
+        })
+
+    return jsonify(result)
+@app.route("/api/ward_members")
+def api_ward_members():
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id,
+               ward_no,
+               name,
+               designation,
+               phone,
+               email,
+               photo
+        FROM ward_members
+        ORDER BY ward_no
+    """)
+
+    members = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    return jsonify(members)
+@app.route("/api/update_profile", methods=["POST"])
+def update_profile():
+    data = request.json
+
+    mobile = data.get("mobile")
+    fullname = data.get("fullname")
+    email = data.get("email")
+
+    conn = wardshabdam.get_connection() # pyright: ignore[reportUndefinedVariable]
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE citizens
+        SET fullname = ?, email = ?
+        WHERE mobile = ?
+    """, (fullname, email, mobile))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message": "Profile updated successfully"
+    })
+@app.route("/api/announcements")
+def api_announcements():
+    conn = wardshabdam.get_connection()
+
+    announcements = conn.execute(
+        "SELECT * FROM announcements ORDER BY id DESC"
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "description": row["description"],
+            "photo": row["photo"],
+            "created_at": row["created_at"]
+        }
+        for row in announcements
+    ])
+@app.route("/api/programs")
+def api_programs():
+    conn = wardshabdam.get_connection()
+
+    programs = conn.execute("""
+        SELECT *
+        FROM programs
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "description": row["description"],
+            "photo": row["photo"],
+            "event_date": row["event_date"]
+        }
+        for row in programs
+    ])
+@app.route("/api/downloads")
+def api_downloads():
+    conn = wardshabdam.get_connection()
+    downloads = conn.execute(
+        "SELECT id, title, category, description, file_name FROM downloads ORDER BY id DESC"
+    ).fetchall()
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "category": row["category"],
+            "description": row["description"],
+            "file_name": row["file_name"],
+            "file_url": f"/static/documents/{row['file_name']}" if row["file_name"] else "",
+        }
+        for row in downloads
+    ])
+
+@app.route("/api/circulars")
+def api_circulars():
+    conn = wardshabdam.get_connection()
+    circulars = conn.execute("""
+        SELECT id, title, description, pdf_file, important, created_at
+        FROM circulars
+        ORDER BY important DESC, created_at DESC
+    """).fetchall()
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "description": row["description"],
+            "important": bool(row["important"]),
+            "created_at": row["created_at"],
+            "file_url": f"/static/documents/{row['pdf_file']}" if row["pdf_file"] else "",
+        }
+        for row in circulars
+    ])
+
+@app.route("/api/gallery")
+def api_gallery():
+    conn = wardshabdam.get_connection()
+    photos = conn.execute("""
+        SELECT id, title, description, photo, event_date
+        FROM gallery
+        ORDER BY id DESC
+    """).fetchall()
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "description": row["description"],
+            "event_date": row["event_date"],
+            "photo": row["photo"],
+            "photo_url": f"/static/uploads/{row['photo']}" if row["photo"] else "",
+        }
+        for row in photos
+    ])
+
+@app.route("/api/notifications/<mobile>")
+def api_notifications(mobile):
+    conn = wardshabdam.get_connection()
+    citizen = conn.execute(
+        "SELECT id FROM citizens WHERE mobile=?",
+        (mobile,)
+    ).fetchone()
+    if not citizen:
+        conn.close()
+        return jsonify({"success": False, "message": "Citizen not found"}), 404
+
+    notifications = conn.execute("""
+        SELECT id, title, message, created_at, is_read
+        FROM notifications
+        WHERE citizen_id=?
+        ORDER BY created_at DESC
+    """, (citizen["id"],)).fetchall()
+    conn.execute(
+        "UPDATE notifications SET is_read=1 WHERE citizen_id=?",
+        (citizen["id"],)
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "message": row["message"],
+            "created_at": row["created_at"],
+            "is_read": bool(row["is_read"]),
+        }
+        for row in notifications
+    ])
+
+@app.route("/api/survey", methods=["GET", "POST"])
+def api_survey():
+    conn = wardshabdam.get_connection()
+    survey = conn.execute(
+        "SELECT id, question FROM surveys ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    if not survey:
+        conn.close()
+        return jsonify({"survey": None, "options": []})
+
+    if request.method == "POST":
+        data = request.get_json() or {}
+        mobile = data.get("mobile")
+        option_id = data.get("option_id")
+        citizen = conn.execute(
+            "SELECT id FROM citizens WHERE mobile=?",
+            (mobile,)
+        ).fetchone()
+        if not citizen or option_id is None:
+            conn.close()
+            return jsonify({"success": False, "message": "Invalid survey vote"}), 400
+        existing_vote = conn.execute(
+            "SELECT id FROM survey_votes WHERE survey_id=? AND citizen_id=?",
+            (survey["id"], citizen["id"])
+        ).fetchone()
+        if existing_vote:
+            conn.close()
+            return jsonify({"success": False, "message": "You have already voted"}), 409
+        option = conn.execute(
+            "SELECT id FROM survey_options WHERE id=? AND survey_id=?",
+            (option_id, survey["id"])
+        ).fetchone()
+        if not option:
+            conn.close()
+            return jsonify({"success": False, "message": "Invalid survey option"}), 400
+        conn.execute(
+            "UPDATE survey_options SET votes=votes+1 WHERE id=?",
+            (option_id,)
+        )
+        conn.execute(
+            "INSERT INTO survey_votes (survey_id, citizen_id) VALUES (?, ?)",
+            (survey["id"], citizen["id"])
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "Vote submitted"})
+
+    options = conn.execute(
+        "SELECT id, option_text, votes FROM survey_options WHERE survey_id=?",
+        (survey["id"],)
+    ).fetchall()
+    conn.close()
+    return jsonify({
+        "survey": {"id": survey["id"], "question": survey["question"]},
+        "options": [dict(option) for option in options],
+    })
+
+@app.route("/api/change_password", methods=["POST"])
+def api_change_password():
+    data = request.get_json() or {}
+    mobile = data.get("mobile")
+    current_password = data.get("current_password") or ""
+    new_password = data.get("new_password") or ""
+    confirm_password = data.get("confirm_password") or ""
+    if not mobile or not current_password or not new_password:
+        return jsonify({"success": False, "message": "All password fields are required"}), 400
+    if new_password != confirm_password:
+        return jsonify({"success": False, "message": "New passwords do not match"}), 400
+    if len(new_password) < 8:
+        return jsonify({"success": False, "message": "New password must be at least 8 characters"}), 400
+
+    citizen = wardshabdam.get_connection()
+    row = citizen.execute(
+        "SELECT id, password FROM citizens WHERE mobile=?",
+        (mobile,)
+    ).fetchone()
+    if not row or not check_password_hash(row["password"], current_password):
+        citizen.close()
+        return jsonify({"success": False, "message": "Current password is incorrect"}), 401
+    citizen.execute(
+        "UPDATE citizens SET password=? WHERE id=?",
+        (generate_password_hash(new_password), row["id"])
+    )
+    citizen.commit()
+    citizen.close()
+    return jsonify({"success": True, "message": "Password changed successfully"})
+
+@app.route("/api/forgot_password", methods=["POST"])
+def api_forgot_password():
+    data = request.get_json() or {}
+    mobile = (data.get("mobile") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    conn = wardshabdam.get_connection()
+    citizen = conn.execute(
+        "SELECT id, email FROM citizens WHERE mobile=? AND LOWER(email)=?",
+        (mobile, email)
+    ).fetchone()
+    if not citizen:
+        conn.close()
+        return jsonify({"success": False, "message": "Mobile number or email is invalid"}), 404
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS password_reset_codes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            citizen_id INTEGER NOT NULL,
+            code_hash TEXT NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            used INTEGER DEFAULT 0
+        )
+    """)
+    code = f"{secrets.randbelow(1000000):06d}"
+    conn.execute(
+        "UPDATE password_reset_codes SET used=1 WHERE citizen_id=? AND used=0",
+        (citizen["id"],)
+    )
+    conn.execute("""
+        INSERT INTO password_reset_codes (citizen_id, code_hash, expires_at)
+        VALUES (?, ?, datetime('now', '+10 minutes'))
+    """, (citizen["id"], generate_password_hash(code)))
+    conn.commit()
+    conn.close()
+    sent = send_configured_email(Message(
+        subject="Ward Shabdam password reset code",
+        recipients=[citizen["email"]],
+        body=f"Your Ward Shabdam password reset code is {code}. It expires in 10 minutes.",
+    ))
+    if not sent:
+        return jsonify({"success": False, "message": "Email service is not configured"}), 503
+    return jsonify({"success": True, "message": "A reset code was sent to your email"})
+
+@app.route("/api/reset_password", methods=["POST"])
+def api_reset_password():
+    data = request.get_json() or {}
+    mobile = (data.get("mobile") or "").strip()
+    code = (data.get("code") or "").strip()
+    password = data.get("password") or ""
+    confirm_password = data.get("confirm_password") or ""
+    if not mobile or not code or not password:
+        return jsonify({"success": False, "message": "All fields are required"}), 400
+    if password != confirm_password or len(password) < 8:
+        return jsonify({"success": False, "message": "Passwords must match and be at least 8 characters"}), 400
+    conn = wardshabdam.get_connection()
+    citizen = conn.execute("SELECT id FROM citizens WHERE mobile=?", (mobile,)).fetchone()
+    reset = conn.execute("""
+        SELECT id, code_hash
+        FROM password_reset_codes
+        WHERE citizen_id=? AND used=0 AND expires_at > CURRENT_TIMESTAMP
+        ORDER BY id DESC LIMIT 1
+    """, (citizen["id"],) if citizen else (0,)).fetchone()
+    if not reset or not check_password_hash(reset["code_hash"], code):
+        conn.close()
+        return jsonify({"success": False, "message": "Invalid or expired reset code"}), 400
+    conn.execute("UPDATE citizens SET password=? WHERE id=?", (generate_password_hash(password), citizen["id"]))
+    conn.execute("UPDATE password_reset_codes SET used=1 WHERE id=?", (reset["id"],))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Password reset successfully"})
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
 
@@ -1261,6 +1760,7 @@ def create_admin_hash():
 @app.route("/add_program", methods=["GET", "POST"])
 def add_program():
 
+    print("ADD PROGRAM ROUTE CALLED")
     check = admin_required()
 
     if check:
@@ -1269,6 +1769,13 @@ def add_program():
     
     
     if request.method == "POST":
+        print("===== ADD PROGRAM =====")
+
+        title = request.form["title"]
+        description = request.form["description"]
+
+        print("Title:", title)
+        print("Description:", description)
 
         title = request.form["title"]
         description = request.form["description"]
@@ -1295,8 +1802,9 @@ def add_program():
             (title, description, photo)
             VALUES (?, ?, ?)
         """, (title, description, filename))
-
+        print("INSERT executed")
         conn.commit()
+        print("COMMIT completed")
         conn.close()
 
         return redirect("/programs")
@@ -1503,7 +2011,8 @@ Your email configuration is working successfully.
 Ward Shabdam
 """
 
-        mail.send(msg)
+        if not send_configured_email(msg):
+            return "Email configuration is missing. Set the Ward Shabdam mail environment variables first.", 503
 
         return "✅ Test email sent successfully!"
 
@@ -1841,13 +2350,15 @@ def survey_results():
 
     survey = cursor.fetchone()
 
-    cursor.execute("""
-        SELECT *
-        FROM survey_options
-        WHERE survey_id=?
-    """, (survey["id"],))
-
-    options = cursor.fetchall()
+    if survey:
+        cursor.execute("""
+            SELECT *
+            FROM survey_options
+            WHERE survey_id=?
+        """, (survey["id"],))
+        options = cursor.fetchall()
+    else:
+        options = []
 
     conn.close()
 
@@ -2181,7 +2692,7 @@ Thank you,
 Ward Shabdam
 """
 
-                mail.send(msg)
+                send_configured_email(msg)
 
             except Exception as e:
                 print("Email Error:", e)
@@ -2944,4 +3455,8 @@ def delete_citizen(id):
         citizen=citizen
     )
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "5000")),
+        debug=os.getenv("FLASK_DEBUG", "0") == "1",
+    )

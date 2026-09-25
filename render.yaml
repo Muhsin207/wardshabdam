@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ward-shabdam
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /
+    envVars:
+      - key: WARD_SHABDAM_SECRET_KEY
+        generateValue: true
+      - key: WARD_SHABDAM_MAIL_USERNAME
+        sync: false
+      - key: WARD_SHABDAM_MAIL_PASSWORD
+        sync: false
+      - key: WARD_SHABDAM_ADMIN_EMAIL
+        sync: false
+      - key: FLASK_DEBUG
+        value: "0"
