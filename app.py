@@ -1,12 +1,6 @@
 from flask_mail import Mail, Message
-
-
-
 from werkzeug.security import generate_password_hash, check_password_hash
-from tabnanny import check
-
-
-from flask import Flask, render_template, request, redirect, session, flash, send_file,jsonify
+from flask import Flask, render_template, request, redirect, session, flash, send_file, jsonify
 import sqlite3
 import os
 import secrets
@@ -23,16 +17,30 @@ sys.path.insert(0, os.path.join(base_dir, "database"))
 
 from database import wardshabdam
 
+# Auto-initialize database tables and initial admin if not exists
+wardshabdam.init_db()
+wardshabdam.ensure_initial_admin()
+
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = "static/uploads"
-app.config["DOCUMENT_FOLDER"] = "static/documents"
+app.config["UPLOAD_FOLDER"] = os.path.join(base_dir, "static", "uploads")
+app.config["DOCUMENT_FOLDER"] = os.path.join(base_dir, "static", "documents")
+
+# Ensure required runtime folders exist
+for folder in [
+    app.config["UPLOAD_FOLDER"],
+    app.config["DOCUMENT_FOLDER"],
+    os.path.join(base_dir, "static", "reports"),
+    os.path.join(base_dir, "database")
+]:
+    os.makedirs(folder, exist_ok=True)
+
 # ==========================
 # Mail Configuration
 # ==========================
 
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_SERVER"] = os.getenv("WARD_SHABDAM_MAIL_SERVER", "smtp.gmail.com")
+app.config["MAIL_PORT"] = int(os.getenv("WARD_SHABDAM_MAIL_PORT", "587"))
+app.config["MAIL_USE_TLS"] = os.getenv("WARD_SHABDAM_MAIL_USE_TLS", "1") == "1"
 app.config["MAIL_USERNAME"] = os.getenv("WARD_SHABDAM_MAIL_USERNAME", "")
 app.config["MAIL_PASSWORD"] = os.getenv("WARD_SHABDAM_MAIL_PASSWORD", "")
 
@@ -48,18 +56,15 @@ def send_configured_email(message):
     mail.send(message)
     return True
 
-print("App file:", app.root_path)
-print("Running app.py")
-print("Document folder:", app.config.get("DOCUMENT_FOLDER"))
-print("Templates folder:", app.template_folder)
 def admin_required():
     if "admin_id" not in session:
-        # If admin is not logged in, redirect to admin login page
         flash("Please log in as admin to access this page.", "warning")
-        return redirect("/admin/login")
-
-    # admin is present
+        return redirect("/admin_login")
     return None
+
+@app.route("/admin/login")
+def admin_login_alias():
+    return redirect("/admin_login")
 UPLOAD_FOLDER = "static/uploads"
 @app.route("/admin_logout")
 def admin_logout():
@@ -894,10 +899,10 @@ def api_register():
     email = (data.get("email") or "").strip().lower()
     ward = (data.get("ward") or "").strip()
     password = data.get("password") or ""
-    confirm_password = data.get("confirm_password") or ""
+    confirm_password = data.get("confirm_password")
     if not all([fullname, mobile, email, ward, password]):
         return jsonify({"success": False, "message": "All fields are required"}), 400
-    if password != confirm_password:
+    if confirm_password is not None and password != confirm_password:
         return jsonify({"success": False, "message": "Passwords do not match"}), 400
     if len(password) < 8:
         return jsonify({"success": False, "message": "Password must be at least 8 characters"}), 400
@@ -917,43 +922,75 @@ def api_register():
 @app.route("/api/submit_complaint", methods=["POST"])
 def api_submit_complaint():
 
-    data = request.get_json()
+    data = request.get_json() or {}
 
-    name = data.get("name")
-    mobile = data.get("mobile")
-    ward = data.get("ward")
-    category = data.get("category")
-    description = data.get("description")
+    name = (data.get("name") or "").strip()
+    mobile = (data.get("mobile") or "").strip()
+    ward = (data.get("ward") or "").strip()
+    category = (data.get("category") or "").strip()
+    description = (data.get("description") or "").strip()
 
-    conn = sqlite3.connect("database/wardshabdam.db")
+    if not name or not mobile or not description:
+        return jsonify({
+            "success": False,
+            "message": "Name, mobile, and description are required."
+        }), 400
+
+    conn = wardshabdam.get_connection()
     cursor = conn.cursor()
+
+    cursor.execute("SELECT id, email FROM citizens WHERE mobile = ?", (mobile,))
+    citizen = cursor.fetchone()
+    citizen_id = citizen["id"] if citizen else None
 
     cursor.execute("""
         INSERT INTO complaints
-        (name, mobile, ward, category, description, status)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (name, mobile, ward, category, description, status, citizen_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         name,
         mobile,
         ward,
         category,
         description,
-        "Pending"
+        "Pending",
+        citizen_id
     ))
+
+    conn.commit()
+    complaint_id = cursor.lastrowid
+    tracking_id = f"WS-2026-{complaint_id:06d}"
+
+    cursor.execute("""
+        UPDATE complaints
+        SET tracking_id=?
+        WHERE id=?
+    """, (tracking_id, complaint_id))
+
+    if citizen_id:
+        cursor.execute("""
+            INSERT INTO notifications (citizen_id, title, message)
+            VALUES (?, ?, ?)
+        """, (
+            citizen_id,
+            "Complaint Submitted",
+            f"Your complaint ({category}) has been submitted with tracking ID {tracking_id}."
+        ))
 
     conn.commit()
     conn.close()
 
     return jsonify({
         "success": True,
-        "message": "Complaint submitted successfully."
+        "message": "Complaint submitted successfully.",
+        "complaint_id": complaint_id,
+        "tracking_id": tracking_id
     })
 # ---------------- MY COMPLAINTS API ----------------
 
 @app.route('/api/my_complaints/<mobile>', methods=['GET'])
 def api_my_complaints(mobile):
-    conn = sqlite3.connect("database/wardshabdam.db")
-    conn.row_factory = sqlite3.Row
+    conn = wardshabdam.get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -962,7 +999,11 @@ def api_my_complaints(mobile):
             category,
             description,
             ward,
-            status
+            status,
+            photo,
+            tracking_id,
+            admin_reply,
+            created_at
         FROM complaints
         WHERE mobile = ?
         ORDER BY id DESC
@@ -979,7 +1020,11 @@ def api_my_complaints(mobile):
             "category": complaint["category"],
             "description": complaint["description"],
             "ward": complaint["ward"],
-            "status": complaint["status"]
+            "status": complaint["status"],
+            "photo": complaint["photo"],
+            "tracking_id": complaint["tracking_id"],
+            "admin_reply": complaint["admin_reply"],
+            "created_at": str(complaint["created_at"]) if complaint["created_at"] else ""
         })
 
     return jsonify(result)
@@ -1233,12 +1278,12 @@ def api_survey():
 def api_change_password():
     data = request.get_json() or {}
     mobile = data.get("mobile")
-    current_password = data.get("current_password") or ""
+    current_password = data.get("current_password") or data.get("old_password") or ""
     new_password = data.get("new_password") or ""
-    confirm_password = data.get("confirm_password") or ""
+    confirm_password = data.get("confirm_password")
     if not mobile or not current_password or not new_password:
         return jsonify({"success": False, "message": "All password fields are required"}), 400
-    if new_password != confirm_password:
+    if confirm_password is not None and new_password != confirm_password:
         return jsonify({"success": False, "message": "New passwords do not match"}), 400
     if len(new_password) < 8:
         return jsonify({"success": False, "message": "New password must be at least 8 characters"}), 400
@@ -1740,9 +1785,12 @@ def admin_login():
 @app.route("/create_admin_hash")
 def create_admin_hash():
 
+    if os.getenv("FLASK_DEBUG", "0") != "1":
+        return "Not available in production mode.", 403
+
     hashed = generate_password_hash("admin123")
 
-    conn = sqlite3.connect("database/wardshabdam.db")
+    conn = wardshabdam.get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1991,11 +2039,19 @@ def delete_program(id):
 @app.route("/test_email")
 def test_email():
 
+    check = admin_required()
+    if check:
+        return check
+
+    target_email = ADMIN_EMAIL or app.config["MAIL_USERNAME"]
+    if not target_email or "YOUR_PERSONAL_EMAIL" in target_email:
+        return "Admin email is not configured. Set WARD_SHABDAM_ADMIN_EMAIL first.", 400
+
     try:
         msg = Message(
             subject="Wardshabdam Test Email",
             sender=app.config["MAIL_USERNAME"],
-            recipients=["YOUR_PERSONAL_EMAIL@gmail.com"]  # Replace with your email
+            recipients=[target_email]
         )
 
         msg.body = """
@@ -2010,12 +2066,12 @@ Wardshabdam
 """
 
         if not send_configured_email(msg):
-            return "Email configuration is missing. Set the Wardshabdam mail environment variables first.", 503
+            return "Email configuration is missing or incomplete. Set the Wardshabdam mail environment variables first.", 503
 
-        return "✅ Test email sent successfully!"
+        return f"✅ Test email sent successfully to {target_email}!"
 
     except Exception as e:
-        return f"❌ Error: {e}"
+        return f"❌ Error sending test email: {e}", 500
     
 @app.route("/ward-members")
 def ward_members():
@@ -2498,10 +2554,15 @@ def ward_login():
             stored_password = member["password"] or ""
             password_valid = False
             if stored_password:
-                try:
+                if stored_password.startswith(("scrypt:", "pbkdf2:", "argon2:")):
                     password_valid = check_password_hash(stored_password, password)
-                except ValueError:
-                    password_valid = stored_password == password
+                else:
+                    password_valid = (stored_password == password)
+                    if password_valid:
+                        conn_up = wardshabdam.get_connection()
+                        conn_up.execute("UPDATE ward_members SET password=? WHERE id=?", (generate_password_hash(password), member["id"]))
+                        conn_up.commit()
+                        conn_up.close()
             else:
                 password_valid = False
 

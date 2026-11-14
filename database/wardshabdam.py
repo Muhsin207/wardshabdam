@@ -60,7 +60,8 @@ def init_db(conn: sqlite3.Connection | None = None) -> None:
     add_column_if_missing(conn, "complaints", "photo", "TEXT")
     add_column_if_missing(conn, "complaints", "status", "TEXT DEFAULT 'Pending'")
     add_column_if_missing(conn, "complaints", "admin_reply", "TEXT")
-    add_column_if_missing(conn, "complaints", "created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    add_column_if_missing(conn, "complaints", "created_at", "TIMESTAMP")
+    conn.execute("UPDATE complaints SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS announcements (
