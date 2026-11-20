@@ -3,7 +3,7 @@
     min-height: 100vh;
     padding: 80px 20px;
 
-    background: linear-gradient(rgba(0,0,0,.48), rgba(0,0,0,.48)), url("../images/banner.jpg");
+    background: url("../images/hero.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -67,34 +67,6 @@
 
     margin-top:10px;
 }
-
-.welcome-gallery{
-    width: min(1100px, calc(100% - 32px));
-    margin: 30px auto 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-}
-
-.panchayat-photo,
-.old-photo{
-    width: 100%;
-    border-radius: 22px;
-    box-shadow: 0 12px 35px rgba(0,0,0,.12);
-    object-fit: cover;
-}
-
-.panchayat-photo{
-    max-height: 520px;
-}
-
-.old-photo{
-    max-width: 760px;
-    max-height: 420px;
-    border: 4px solid #f4f4f4;
-}
-
 .btn-primary{
 
     background:#198754;

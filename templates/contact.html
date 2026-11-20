@@ -1,13 +1,208 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Contact
+Contact & Emergency Directory | Wardshabdam
 {% endblock %}
 
 {% block content %}
 
-<h1 style="padding:80px;text-align:center;">
-Contact Us
-</h1>
+<div style="max-width: 1200px; margin: 30px auto 60px; padding: 0 20px;">
+
+    <!-- Header Banner -->
+    <div style="text-align: center; margin-bottom: 36px;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: var(--radius-full); background: var(--brand-primary-light); color: var(--brand-primary); font-size: 28px; margin-bottom: 14px;">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+        <h1 style="font-size: 30px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
+            പഞ്ചായത്ത് ബന്ധപ്പെടൽ & അത്യാഹിത ഡയറക്ടറി
+        </h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin: 0;">
+            Panchayat Contact & 24x7 Emergency Helplines • Thachanattukkara Grama Panchayat
+        </p>
+    </div>
+
+    <!-- Quick Emergency SOS Bar -->
+    <div style="background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%); border: 1.5px solid #FECDD3; border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: #E11D48; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                <i class="fa-solid fa-truck-medical"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 18px; font-weight: 800; color: #9F1239; margin: 0 0 2px;">
+                    24x7 അടിയന്തര സഹായം / Emergency Quick Dial
+                </h3>
+                <p style="color: #BE123C; font-size: 13px; margin: 0;">
+                    ആംബുലൻസ്: <strong>108</strong> | പോലീസ്: <strong>112</strong> | ഫയർ ഫോഴ്സ്: <strong>101</strong> | KSEB: <strong>1912</strong>
+                </p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="tel:108" style="background: #E11D48; color: #FFFFFF; font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: var(--radius-md); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-phone"></i> 108 ആംബുലൻസ്
+            </a>
+            <a href="tel:112" style="background: #0F172A; color: #FFFFFF; font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: var(--radius-md); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-shield"></i> 112 പോലീസ്
+            </a>
+        </div>
+    </div>
+
+    <!-- Office & Helplines Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
+
+        <!-- Panchayat Main Office Card -->
+        <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">പഞ്ചായത്ത് ഓഫീസ്</h3>
+                    <small style="color: var(--text-muted);">Grama Panchayat Main Office</small>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;">
+                <p style="margin: 0; display: flex; align-items: flex-start; gap: 10px;">
+                    <i class="fa-solid fa-location-dot" style="color: var(--brand-primary); margin-top: 4px;"></i>
+                    <span>തച്ചനാട്ടുകര ഗ്രാമപഞ്ചായത്ത് കാര്യാലയം, പാലക്കാട് ജില്ല, കേരളം - 678583</span>
+                </p>
+                <p style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-phone" style="color: var(--brand-primary);"></i>
+                    <span>ഫോൺ: <strong>04924-232233</strong> / <strong>+91 8157972189</strong></span>
+                </p>
+                <p style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-envelope" style="color: var(--brand-primary);"></i>
+                    <span>ഇമെയിൽ: <strong>wardshabdam@gmail.com</strong></span>
+                </p>
+                <p style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-clock" style="color: var(--brand-accent);"></i>
+                    <span>ഓഫീസ് സമയം: തിങ്കൾ - ശനി (10:00 AM - 5:00 PM)</span>
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <a href="tel:04924232233" class="call-btn" style="flex: 1; text-align: center; padding: 12px; text-decoration: none; border-radius: var(--radius-md);">
+                    <i class="fa-solid fa-phone me-1"></i> വിളിക്കുക
+                </a>
+                <a href="https://wa.me/918157972189" target="_blank" class="whatsapp-btn" style="flex: 1; text-align: center; padding: 12px; text-decoration: none; border-radius: var(--radius-md);">
+                    <i class="fa-brands fa-whatsapp me-1"></i> വാട്സ്ആപ്പ്
+                </a>
+            </div>
+        </div>
+
+        <!-- Key Officers Directory -->
+        <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">പ്രധാന ചുമതലക്കാർ</h3>
+                    <small style="color: var(--text-muted);">Key Administrative Officers</small>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-surface-subtle); border-radius: var(--radius-md);">
+                    <div>
+                        <strong style="color: var(--text-primary); display: block; font-size: 14px;">പഞ്ചായത്ത് പ്രസിഡന്റ്</strong>
+                        <small style="color: var(--text-muted);">Panchayat President</small>
+                    </div>
+                    <a href="tel:9496045001" style="font-size: 13px; font-weight: 700; color: var(--brand-primary); text-decoration: none;">
+                        <i class="fa-solid fa-phone me-1"></i> വിളിക്കുക
+                    </a>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-surface-subtle); border-radius: var(--radius-md);">
+                    <div>
+                        <strong style="color: var(--text-primary); display: block; font-size: 14px;">പഞ്ചായത്ത് സെക്രട്ടറി</strong>
+                        <small style="color: var(--text-muted);">Panchayat Secretary</small>
+                    </div>
+                    <a href="tel:9496045002" style="font-size: 13px; font-weight: 700; color: var(--brand-primary); text-decoration: none;">
+                        <i class="fa-solid fa-phone me-1"></i> വിളിക്കുക
+                    </a>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-surface-subtle); border-radius: var(--radius-md);">
+                    <div>
+                        <strong style="color: var(--text-primary); display: block; font-size: 14px;">വില്ലേജ് ഓഫീസർ</strong>
+                        <small style="color: var(--text-muted);">Village Officer</small>
+                    </div>
+                    <a href="tel:04924222300" style="font-size: 13px; font-weight: 700; color: var(--brand-primary); text-decoration: none;">
+                        <i class="fa-solid fa-phone me-1"></i> വിളിക്കുക
+                    </a>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-surface-subtle); border-radius: var(--radius-md);">
+                    <div>
+                        <strong style="color: var(--text-primary); display: block; font-size: 14px;">ഹെൽത്ത് ഇൻസ്പെക്ടർ</strong>
+                        <small style="color: var(--text-muted);">Health Inspector (PHC)</small>
+                    </div>
+                    <a href="tel:9447000123" style="font-size: 13px; font-weight: 700; color: var(--brand-primary); text-decoration: none;">
+                        <i class="fa-solid fa-phone me-1"></i> വിളിക്കുക
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Essential Utility & Emergency Directory Table -->
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 22px;">
+            <div>
+                <h3 style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px;">
+                    <i class="fa-solid fa-address-book" style="color: var(--brand-primary); margin-right: 8px;"></i>
+                    അടിയന്തര & അവശ്യ സേവനങ്ങളുടെ ഫോൺ ഡയറക്ടറി
+                </h3>
+                <small style="color: var(--text-muted);">Emergency & Public Utility Service Directory</small>
+            </div>
+            <a href="/ward-members" class="call-btn" style="padding: 10px 16px; border-radius: var(--radius-md); font-size: 13px; text-decoration: none;">
+                <i class="fa-solid fa-users me-1"></i> വാർഡ് അംഗങ്ങളെ കാണുക / Ward Members
+            </a>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-light); background: var(--bg-surface-subtle);">
+                        <th style="padding: 14px 18px; font-weight: 700; color: var(--text-primary);">സേവനം / Service</th>
+                        <th style="padding: 14px 18px; font-weight: 700; color: var(--text-primary);">ചുമതലക്കാരൻ / Role</th>
+                        <th style="padding: 14px 18px; font-weight: 700; color: var(--text-primary);">ഫോൺ നമ്പർ / Phone</th>
+                        <th style="padding: 14px 18px; font-weight: 700; color: var(--text-primary);">വിളിക്കുക / Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in emergency_contacts %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 14px 18px; font-weight: 700; color: var(--text-primary);">
+                            {{ item.service_name }}
+                        </td>
+                        <td style="padding: 14px 18px; color: var(--text-muted);">
+                            {{ item.contact_person or "Helpdesk" }}
+                        </td>
+                        <td style="padding: 14px 18px; font-family: monospace; font-size: 15px; font-weight: 600; color: var(--brand-primary);">
+                            {{ item.phone }}
+                        </td>
+                        <td style="padding: 14px 18px;">
+                            <a href="tel:{{ item.phone }}" style="background: var(--brand-primary-light); color: var(--brand-primary-dark); font-weight: 700; padding: 6px 14px; border-radius: var(--radius-sm); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-phone"></i> Call
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            വിവരങ്ങൾ ലഭ്യമല്ല / No emergency contacts listed yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 
 {% endblock %}

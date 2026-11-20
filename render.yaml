@@ -8,15 +8,11 @@ services:
     envVars:
       - key: WARD_SHABDAM_SECRET_KEY
         generateValue: true
-      - key: FLASK_DEBUG
-        value: "0"
-      - key: WARD_SHABDAM_ADMIN_USERNAME
-        value: "admin"
-      - key: WARD_SHABDAM_ADMIN_PASSWORD
-        sync: false
       - key: WARD_SHABDAM_MAIL_USERNAME
         sync: false
       - key: WARD_SHABDAM_MAIL_PASSWORD
         sync: false
       - key: WARD_SHABDAM_ADMIN_EMAIL
         sync: false
+      - key: FLASK_DEBUG
+        value: "0"

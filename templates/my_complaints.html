@@ -1,73 +1,86 @@
 {% extends "layout.html" %}
 
 {% block title %}
-My Complaints
+My Complaints | Wardshabdam
 {% endblock %}
 
 {% block content %}
 
-<div class="complaints-container">
+<div class="complaints-container" style="max-width: 1100px; margin: 30px auto; padding: 0 20px;">
 
-    <div class="page-title">
-        <h1>📋 My Complaints</h1>
-        <p>Track all complaints submitted by you.</p>
+    <div class="page-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0 0 6px;">
+                <i class="fa-solid fa-list-check" style="color: var(--brand-primary); margin-right: 8px;"></i>
+                എന്റെ പരാതികൾ / My Complaints
+            </h1>
+            <p style="color: var(--text-muted); margin: 0; font-size: 14px;">നിങ്ങൾ സമർപ്പിച്ച പരാതികളുടെ തത്സമയ വിവരങ്ങൾ ഇവിടെ പരിശോധിക്കാം.</p>
+        </div>
+
+        <a href="/report" class="call-btn" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 12px 20px; border-radius: var(--radius-md);">
+            <i class="fa-solid fa-plus"></i> പുതിയ പരാതി നൽകുക / New Complaint
+        </a>
     </div>
 
     {% if complaints %}
 
-    <div class="complaints-grid">
+    <div class="complaints-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
 
         {% for complaint in complaints %}
 
-        <div class="complaint-card">
+        <div class="complaint-card" style="background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: all var(--transition-base);">
 
-            <div class="card-header">
-                <h3>{{ complaint.category }}</h3>
+            <div>
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <span class="tracking-pill" style="font-size: 12px; padding: 4px 10px;">ID: #{{ complaint.tracking_id if complaint.tracking_id else complaint.id }}</span>
+                        <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 10px 0 0;">{{ complaint.category }}</h3>
+                    </div>
 
-                {% if complaint.status == "Pending" %}
-                    <span class="status pending">Pending</span>
-
-                {% elif complaint.status == "In Progress" %}
-                    <span class="status progress">In Progress</span>
-
-
-                    {% if complaint.feedback_id %}
-
-                        <span class="feedback-done">
-                            ✅ Feedback Submitted
+                    {% if complaint.status == "Pending" %}
+                        <span class="badge badge-pending">
+                            <i class="fa-solid fa-clock"></i> Pending
                         </span>
-
+                    {% elif complaint.status == "In Progress" %}
+                        <span class="badge badge-progress">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> In Progress
+                        </span>
                     {% else %}
-
-                        <a href="/feedback/{{ complaint.id }}" class="feedback-btn">
-                            ⭐ Rate Our Service
-                        </a>
-
+                        <span class="badge badge-resolved">
+                            <i class="fa-solid fa-circle-check"></i> Resolved
+                        </span>
                     {% endif %}
+                </div>
 
+                <div class="card-body" style="border-top: 1px dashed var(--border-light); padding-top: 14px; margin-bottom: 16px;">
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;">
+                        <i class="fa-solid fa-location-dot" style="color: var(--brand-accent); width: 18px;"></i>
+                        <strong>വാർഡ് / Ward:</strong> Ward {{ complaint.ward }}
+                    </p>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                        {{ complaint.description[:90] }}{% if complaint.description|length > 90 %}...{% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 14px;">
+                {% if complaint.status in ["In Progress", "Resolved"] and complaint.feedback_id %}
+                    <span style="font-size: 12px; color: var(--brand-primary); font-weight: 600;">
+                        <i class="fa-solid fa-star" style="color: #F59E0B;"></i> Feedback Done
+                    </span>
+                {% elif complaint.status in ["In Progress", "Resolved"] %}
+                    <a href="/feedback/{{ complaint.id }}" style="font-size: 13px; font-weight: 700; color: var(--brand-accent); text-decoration: none;">
+                        ⭐ Rate Service
+                    </a>
                 {% else %}
-                    <span class="status resolved">Resolved</span>
+                    <span style="font-size: 12px; color: var(--text-muted);">
+                        <i class="fa-regular fa-clock"></i> Under review
+                    </span>
                 {% endif %}
 
-            </div>
-
-            <div class="card-body">
-
-                <p><strong>Complaint ID:</strong> {{ complaint.id }}</p>
-
-                <p><strong>Ward:</strong> {{ complaint.ward }}</p>
-
-                <p><strong>Category:</strong> {{ complaint.category }}</p>
-
-            </div>
-
-            <div class="card-footer">
-
-                <a href="/my_complaint/{{ complaint.id }}" class="view-btn">
-                    <i class="fa-solid fa-eye"></i>
-                    View Details
+                <a href="/my_complaint/{{ complaint.id }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--brand-primary); text-decoration: none; background: var(--brand-primary-light); padding: 8px 14px; border-radius: var(--radius-sm);">
+                    <i class="fa-solid fa-eye"></i> Track / View
                 </a>
-
             </div>
 
         </div>
@@ -78,18 +91,16 @@ My Complaints
 
     {% else %}
 
-    <div class="empty-box">
+    <div class="empty-box" style="background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); padding: 60px 20px; text-align: center; max-width: 500px; margin: 40px auto;">
+        <div style="width: 70px; height: 70px; border-radius: var(--radius-full); background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 18px;">
+            <i class="fa-regular fa-folder-open"></i>
+        </div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">പരാതികൾ ലഭ്യമല്ല</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">നിങ്ങൾ ഇതുവരെ പരാതികളൊന്നും സമർപ്പിച്ചിട്ടില്ല.<br><small>You haven't submitted any complaints yet.</small></p>
 
-        <i class="fa-solid fa-face-smile"></i>
-
-        <h2>No Complaints Yet</h2>
-
-        <p>You haven't submitted any complaints.</p>
-
-        <a href="/report" class="report-btn">
-            Report an Issue
+        <a href="/report" class="call-btn" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 12px 24px; border-radius: var(--radius-md);">
+            <i class="fa-solid fa-pen-to-square"></i> പരാതി സമർപ്പിക്കുക / Report an Issue
         </a>
-
     </div>
 
     {% endif %}

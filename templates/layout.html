@@ -8,7 +8,18 @@
 
     <title>{% block title %}Wardshabdam{% endblock %}</title>
 
-    <!-- Main CSS -->
+    <!-- Google Fonts for Modern Civic Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Theme Design Tokens & Global System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
+    <!-- Page Specific Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
@@ -20,75 +31,68 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/edit.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/change_password.css') }}">
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/change_password.css') }}">
-
-    <link rel="stylesheet"
-    href="{{ url_for('static', filename='css/gallery.css') }}">
-
-    <link rel="stylesheet"
-    href="{{ url_for('static', filename='css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gallery.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
-    <link rel="stylesheet"
-    href="{{ url_for('static', filename='css/gallery.css') }}">
+
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="theme-color" content="#0d6efd">
+    <meta name="theme-color" content="#0D5C3A">
 </head>
 
 <body>
 
-   <!-- ========================= -->
-<!-- Navigation Bar -->
-<!-- ========================= -->
+    <!-- ========================= -->
+    <!-- Navigation Bar -->
+    <!-- ========================= -->
 
-<div class="navbar">
+    <div class="navbar">
 
- <header class="top-header">
+        <header class="top-header">
 
-    <!-- Logo -->
-    <div class="logo-section">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+            <!-- Logo -->
+            <a href="/" class="logo-section">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Wardshabdam Logo">
+                <div class="logo-text">
+                    <h2>Wardshabdam</h2>
+                    <small>Digital Citizen Service Portal</small>
+                </div>
+            </a>
 
-        <div class="logo-text">
-            <h2>Wardshabdam</h2>
-            <small>Digital Citizen Service Portal</small>
-        </div>
+            <!-- Right Actions (Notification + Menu) -->
+            <div class="header-right">
+                {% if session.get("citizen_id") %}
+                <a href="/notifications" class="notification-bell" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    {% if notification_count > 0 %}
+                    <span class="notification-badge">
+                        {{ notification_count }}
+                    </span>
+                    {% endif %}
+                </a>
+                {% endif %}
+
+                <!-- Menu Button -->
+                <button class="menu-btn" onclick="openMenu()" aria-label="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+
+        </header>
+
     </div>
 
-    <!-- Menu Button -->
-    <button class="menu-btn" onclick="openMenu()">
-        ☰
-    </button>
+    <!-- Sidebar -->
 
-</header>
-    <!-- Notification -->
-    {% if session.get("citizen_id") %}
-    <a href="/notifications" class="notification-bell">
+    <div id="sidebar" class="sidebar">
 
-        <i class="fa-solid fa-bell"></i>
-
-        {% if notification_count > 0 %}
-        <span class="notification-badge">
-            {{ notification_count }}
-        </span>
-        {% endif %}
-
-    </a>
-    {% endif %}
-
-</div>
-
-<!-- Sidebar -->
-
-<div id="sidebar" class="sidebar">
-
-    <button class="close-btn" onclick="closeMenu()">
-        ✖
-    </button>
+        <div class="sidebar-header">
+            <h3><i class="fa-solid fa-landmark me-2"></i> മെനു / Menu</h3>
+            <button class="close-btn" onclick="closeMenu()" aria-label="Close Menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
    <ul class="sidebar-menu">
 
@@ -103,6 +107,20 @@
         <a href="/announcements">
             <i class="fa-solid fa-bullhorn"></i>
             അറിയിപ്പുകൾ
+        </a>
+    </li>
+
+    <li>
+        <a href="/track">
+            <i class="fa-solid fa-route"></i>
+            പരാതി ട്രാക്കിംഗ്
+        </a>
+    </li>
+
+    <li>
+        <a href="/contact">
+            <i class="fa-solid fa-headset"></i>
+            അത്യാഹിത ഡയറക്ടറി & ഓഫീസ്
         </a>
     </li>
 
@@ -261,35 +279,34 @@
 
     <div class="login-box">
 
-        <span class="close-login"
-              onclick="closeLoginModal()">
-            &times;
-        </span>
+        <button class="close-login" onclick="closeLoginModal()" aria-label="Close Login Modal">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
 
-        <h2>Welcome</h2>
-
-        <p>Select Login Type</p>
+        <h2>സ്വാഗതം / Welcome</h2>
+        <p>ലോഗിൻ തരം തിരഞ്ഞെടുക്കുക / Select Login Type</p>
 
         <a href="/login" class="login-btn citizen">
-            👤 Citizen Login
+            <i class="fa-solid fa-user"></i>
+            <span><strong>പൗരൻ ലോഗിൻ</strong><br><small>Citizen / Family Login</small></span>
         </a>
 
         <a href="/ward-login" class="login-btn ward">
-            👥 Ward Member Login
+            <i class="fa-solid fa-user-tie"></i>
+            <span><strong>വാർഡ് അംഗം ലോഗിൻ</strong><br><small>Ward Member Login</small></span>
         </a>
 
         <a href="/admin_login" class="login-btn admin">
-            🛡 Admin Login
+            <i class="fa-solid fa-shield-halved"></i>
+            <span><strong>അഡ്മിൻ ലോഗിൻ</strong><br><small>Panchayat Admin Login</small></span>
         </a>
 
-        <hr>
+        <div class="sidebar-divider"></div>
 
-        <p>New Citizen?</p>
+        <p style="margin-bottom: 8px;">പുതിയ അംഗമാണോ? / New to Wardshabdam?</p>
 
         <a href="/register" class="register-btn">
-
-            ➕ Register Here
-
+            <i class="fa-solid fa-user-plus me-1"></i> പുതിയ അക്കൗണ്ട് രജിസ്റ്റർ ചെയ്യുക / Register
         </a>
 
     </div>

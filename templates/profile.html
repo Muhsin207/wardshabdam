@@ -1,42 +1,198 @@
 {% extends "layout.html" %}
 
 {% block title %}
-My Profile
+Citizen & Family Profile | Wardshabdam
 {% endblock %}
 
 {% block content %}
 
-<div class="report-container">
+<div style="max-width: 1000px; margin: 30px auto 60px; padding: 0 20px;">
 
-    <h2>👤 My Profile</h2>
+    <!-- Profile Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0 0 6px;">
+                <i class="fa-solid fa-id-card" style="color: var(--brand-primary); margin-right: 8px;"></i>
+                പൗര പ്രൊഫൈൽ & കുടുംബ വിവരങ്ങൾ
+            </h1>
+            <p style="color: var(--text-muted); margin: 0; font-size: 14px;">
+                Citizen Household Account & Family Management • Wardshabdam
+            </p>
+        </div>
 
-    <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" value="{{ citizen.fullname }}" readonly>
+        <div style="display: flex; gap: 10px;">
+            <a href="/edit_profile" class="call-btn" style="text-decoration: none; padding: 10px 18px; border-radius: var(--radius-md); font-size: 14px;">
+                <i class="fa-solid fa-pen-to-square me-1"></i> തിരുത്തുക / Edit Profile
+            </a>
+            <a href="/change_password" style="background: var(--bg-surface-subtle); color: var(--text-primary); border: 1px solid var(--border-light); font-weight: 700; text-decoration: none; padding: 10px 18px; border-radius: var(--radius-md); font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-key"></i> പാസ്‌വേഡ് മാറ്റുക
+            </a>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Mobile Number</label>
-        <input type="text" value="{{ citizen.mobile }}" readonly>
+    <!-- Primary Citizen Details Card -->
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: 30px;">
+        <h3 style="font-size: 17px; font-weight: 800; color: var(--text-primary); margin: 0 0 20px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-user-shield" style="color: var(--brand-primary);"></i>
+            ഗൃഹനാഥൻ / പ്രധാന ഉപയോക്താവ് (Primary Account Holder)
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
+            <div style="background: var(--bg-surface-subtle); padding: 16px; border-radius: var(--radius-md);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600;">പേര് / FULL NAME</small>
+                <strong style="color: var(--text-primary); font-size: 16px;">{{ citizen.fullname }}</strong>
+            </div>
+
+            <div style="background: var(--bg-surface-subtle); padding: 16px; border-radius: var(--radius-md);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600;">മൊബൈൽ നമ്പർ / MOBILE</small>
+                <strong style="color: var(--text-primary); font-size: 16px;">{{ citizen.mobile }}</strong>
+            </div>
+
+            <div style="background: var(--bg-surface-subtle); padding: 16px; border-radius: var(--radius-md);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600;">ഇമെയിൽ / EMAIL</small>
+                <strong style="color: var(--text-primary); font-size: 16px;">{{ citizen.email or "രേഖപ്പെടുത്തിയിട്ടില്ല" }}</strong>
+            </div>
+
+            <div style="background: var(--bg-surface-subtle); padding: 16px; border-radius: var(--radius-md);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600;">വാർഡ് നമ്പർ / WARD</small>
+                <strong style="color: var(--brand-primary); font-size: 16px;">{{ citizen.ward }}</strong>
+            </div>
+
+            <div style="background: var(--bg-surface-subtle); padding: 16px; border-radius: var(--radius-md);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600;">വീട്ടു നമ്പർ / HOUSE NO</small>
+                <strong style="color: var(--text-primary); font-size: 16px;">{{ citizen.house_no or "രേഖപ്പെടുത്തിയിട്ടില്ല" }}</strong>
+            </div>
+
+            <div style="background: var(--bg-surface-subtle); padding: 16px; border-radius: var(--radius-md);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600;">റേഷൻ കാർഡ് നമ്പർ / RATION CARD NO</small>
+                <strong style="color: var(--text-primary); font-size: 16px;">{{ citizen.ration_card_no or "രേഖപ്പെടുത്തിയിട്ടില്ല" }}</strong>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" value="{{ citizen.email }}" readonly>
+    <!-- Family Members Household Section -->
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 22px;">
+            <div>
+                <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-people-roof" style="color: var(--brand-primary);"></i>
+                    കുടുംബാംഗങ്ങൾ / Family Members
+                </h3>
+                <small style="color: var(--text-muted);">
+                    പഞ്ചായത്ത് സർവേകൾക്കും ആനുകൂല്യങ്ങൾക്കുമായി കുടുംബാംഗങ്ങളെ ഇവിടെ ചേർക്കാം
+                </small>
+            </div>
+
+            <button onclick="document.getElementById('familyFormBox').style.display = document.getElementById('familyFormBox').style.display === 'none' ? 'block' : 'none';" class="call-btn" style="border: none; cursor: pointer; padding: 10px 18px; border-radius: var(--radius-md); font-size: 13px;">
+                <i class="fa-solid fa-plus me-1"></i> പുതിയ അംഗത്തെ ചേർക്കുക / Add Member
+            </button>
+        </div>
+
+        <!-- Add Family Member Form (Toggleable) -->
+        <div id="familyFormBox" style="display: none; background: var(--bg-surface-subtle); border: 1.5px dashed var(--border-light); border-radius: var(--radius-md); padding: 22px; margin-bottom: 24px;">
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px;">
+                കുടുംബാംഗത്തിന്റെ വിവരങ്ങൾ നൽകുക
+            </h4>
+            <form action="/add_family_member" method="POST">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">പേര് / Name *</label>
+                        <input type="text" name="name" placeholder="അംഗത്തിന്റെ പേര്" required style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">ബന്ധം / Relationship *</label>
+                        <select name="relationship" required style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                            <option value="" disabled selected>തിരഞ്ഞെടുക്കുക</option>
+                            <option value="ഭാര്യ (Spouse)">ഭാര്യ (Spouse)</option>
+                            <option value="ഭർത്താവ് (Spouse)">ഭർത്താവ് (Spouse)</option>
+                            <option value="മകൻ (Son)">മകൻ (Son)</option>
+                            <option value="മകൾ (Daughter)">മകൾ (Daughter)</option>
+                            <option value="അച്ഛൻ (Father)">അച്ഛൻ (Father)</option>
+                            <option value="അമ്മ (Mother)">അമ്മ (Mother)</option>
+                            <option value="സഹോദരൻ (Brother)">സഹോദരൻ (Brother)</option>
+                            <option value="സഹോദരി (Sister)">സഹോദരി (Sister)</option>
+                            <option value="മറ്റുള്ളവർ (Other)">മറ്റുള്ളവർ (Other)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">പ്രായം / Age</label>
+                        <input type="number" name="age" min="1" max="120" placeholder="പ്രായം" style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">ലിംഗം / Gender</label>
+                        <select name="gender" style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                            <option value="പുരുഷൻ (Male)">പുരുഷൻ (Male)</option>
+                            <option value="സ്ത്രീ (Female)">സ്ത്രീ (Female)</option>
+                            <option value="മറ്റുള്ളവ (Other)">മറ്റുള്ളവ (Other)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">തൊഴിൽ / Occupation</label>
+                        <input type="text" name="occupation" placeholder="തൊഴിൽ / വിദ്യാഭ്യാസം" style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" onclick="document.getElementById('familyFormBox').style.display='none';" style="background: transparent; border: 1px solid var(--border-light); padding: 8px 16px; border-radius: var(--radius-sm); cursor: pointer;">
+                        റദ്ദാക്കുക / Cancel
+                    </button>
+                    <button type="submit" class="call-btn" style="border: none; cursor: pointer; padding: 8px 20px; border-radius: var(--radius-sm); font-weight: 700;">
+                        സേവ് ചെയ്യുക / Save Member
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Family Members Table -->
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-light); background: var(--bg-surface-subtle);">
+                        <th style="padding: 12px 16px; font-weight: 700; color: var(--text-primary);">പേര് / Name</th>
+                        <th style="padding: 12px 16px; font-weight: 700; color: var(--text-primary);">ബന്ധം / Relationship</th>
+                        <th style="padding: 12px 16px; font-weight: 700; color: var(--text-primary);">പ്രായം / Age</th>
+                        <th style="padding: 12px 16px; font-weight: 700; color: var(--text-primary);">തൊഴിൽ / Occupation</th>
+                        <th style="padding: 12px 16px; font-weight: 700; color: var(--text-primary); text-align: right;">നടപടി / Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in family_members %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 12px 16px; font-weight: 700; color: var(--text-primary);">
+                            {{ member.name }}
+                        </td>
+                        <td style="padding: 12px 16px; color: var(--text-secondary);">
+                            {{ member.relationship }}
+                        </td>
+                        <td style="padding: 12px 16px; color: var(--text-muted);">
+                            {{ member.age or "-" }} ({{ member.gender or "-" }})
+                        </td>
+                        <td style="padding: 12px 16px; color: var(--text-muted);">
+                            {{ member.occupation or "-" }}
+                        </td>
+                        <td style="padding: 12px 16px; text-align: right;">
+                            <a href="/delete_family_member/{{ member.id }}" onclick="return confirm('ഈ അംഗത്തെ ഒഴിവാക്കണമെന്നുറപ്പാണോ? / Remove this family member?');" style="color: #DC2626; font-size: 13px; font-weight: 600; text-decoration: none;">
+                                <i class="fa-solid fa-trash-can"></i> ഒഴിവാക്കുക
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                            കുടുംബാംഗങ്ങളെ ചേർത്തിട്ടില്ല. മുകളിലുള്ള ബട്ടൺ ഉപയോഗിച്ച് ചേർക്കാവുന്നതാണ്.<br>
+                            <small>No family members added yet.</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <br>
-
-    <a href="/edit_profile" class="btn-add">
-        ✏️ Edit Profile
-    </a>
-    <br><br>
-
-<a href="/change_password" class="btn-add">
-
-🔒 Change Password
-
-</a>
 </div>
 
 {% endblock %}

@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sqlite3
 from pathlib import Path
 from werkzeug.security import generate_password_hash
@@ -88,6 +88,62 @@ def init_db(conn: sqlite3.Connection | None = None) -> None:
     add_column_if_missing(conn, "citizens", "email", "TEXT")
     add_column_if_missing(conn, "citizens", "password", "TEXT NOT NULL DEFAULT ''")
     add_column_if_missing(conn, "citizens", "ward", "TEXT")
+    add_column_if_missing(conn, "citizens", "house_no", "TEXT DEFAULT ''")
+    add_column_if_missing(conn, "citizens", "ration_card_no", "TEXT DEFAULT ''")
+
+    # Family Members for household management
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS family_members (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        citizen_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        relationship TEXT NOT NULL,
+        age INTEGER,
+        gender TEXT,
+        occupation TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+
+    # Real-time Complaint Lifecycle Timeline
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS complaint_timeline (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        complaint_id INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        remarks TEXT NOT NULL DEFAULT '',
+        updated_by TEXT NOT NULL DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+    add_column_if_missing(conn, "complaints", "resolution_photo", "TEXT")
+
+    # Emergency Directory Services
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS emergency_contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        service_name TEXT NOT NULL,
+        contact_person TEXT,
+        phone TEXT NOT NULL,
+        category TEXT NOT NULL DEFAULT 'General',
+        ward TEXT DEFAULT 'All'
+    );
+    """)
+
+    # Grama Sabha Suggestions & Public Interaction
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS gramasabha_suggestions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        citizen_id INTEGER,
+        citizen_name TEXT,
+        ward TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        upvotes INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'Under Review',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS admins (
@@ -204,6 +260,35 @@ def init_db(conn: sqlite3.Connection | None = None) -> None:
     """)
 
     conn.commit()
+    ensure_initial_emergency_contacts(conn)
+    if close_after:
+        conn.close()
+
+def ensure_initial_emergency_contacts(conn: sqlite3.Connection | None = None) -> None:
+    close_after = False
+    if conn is None:
+        conn = get_connection()
+        close_after = True
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM emergency_contacts")
+    if cursor.fetchone()[0] == 0:
+        defaults = [
+            ("പഞ്ചായത്ത് ഓഫീസ് (Panchayat Office)", "സെക്രട്ടറി / Secretary", "04924-232233", "Office", "All"),
+            ("പോലീസ് സ്റ്റേഷൻ (Local Police)", "എസ്.ഐ / Sub-Inspector", "112 / 04924-222100", "Police", "All"),
+            ("അഗ്നിശമന സേന (Fire Force)", "ഫയർ സ്റ്റേഷൻ / Fire Officer", "101 / 04924-222101", "Fire", "All"),
+            ("ആംബുലൻസ് സർവീസ് (24x7 Ambulance)", "പഞ്ചായത്ത് ആംബുലൻസ്", "108 / 9847000108", "Health", "All"),
+            ("കെ.എസ്.ഇ.ബി ഇലക്ട്രിസിറ്റി (KSEB)", "സെക്ഷൻ ഓഫീസ്", "1912 / 04924-233112", "Electricity", "All"),
+            ("വാട്ടർ അതോറിറ്റി (Kerala Water Authority)", "പൈപ്പ് ലൈൻ സൂപ്പർവൈസർ", "1916 / 04924-231916", "Water", "All"),
+            ("പ്രാഥമിക ആരോഗ്യ കേന്ദ്രം (PHC / Health Centre)", "മെഡിക്കൽ ഓഫീസർ", "04924-234500", "Health", "All"),
+            ("കുടുംബശ്രീ ഹെൽപ്പ് ലൈൻ (Kudumbashree)", "സി.ഡി.എസ് ചെയർപേഴ്സൺ", "9495000001", "Social", "All")
+        ]
+        cursor.executemany(
+            "INSERT INTO emergency_contacts (service_name, contact_person, phone, category, ward) VALUES (?, ?, ?, ?, ?)",
+            defaults
+        )
+        conn.commit()
+
     if close_after:
         conn.close()
 

@@ -17,7 +17,6 @@ sys.path.insert(0, os.path.join(base_dir, "database"))
 
 from database import wardshabdam
 
-# Auto-initialize database tables and initial admin if not exists
 wardshabdam.init_db()
 wardshabdam.ensure_initial_admin()
 
@@ -25,15 +24,13 @@ app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = os.path.join(base_dir, "static", "uploads")
 app.config["DOCUMENT_FOLDER"] = os.path.join(base_dir, "static", "documents")
 
-# Ensure required runtime folders exist
 for folder in [
     app.config["UPLOAD_FOLDER"],
     app.config["DOCUMENT_FOLDER"],
     os.path.join(base_dir, "static", "reports"),
-    os.path.join(base_dir, "database")
+    os.path.join(base_dir, "database"),
 ]:
     os.makedirs(folder, exist_ok=True)
-
 # ==========================
 # Mail Configuration
 # ==========================
@@ -56,15 +53,18 @@ def send_configured_email(message):
     mail.send(message)
     return True
 
+print("App file:", app.root_path)
+print("Running app.py")
+print("Document folder:", app.config.get("DOCUMENT_FOLDER"))
+print("Templates folder:", app.template_folder)
 def admin_required():
     if "admin_id" not in session:
+        # If admin is not logged in, redirect to admin login page
         flash("Please log in as admin to access this page.", "warning")
         return redirect("/admin_login")
-    return None
 
-@app.route("/admin/login")
-def admin_login_alias():
-    return redirect("/admin_login")
+    # admin is present
+    return None
 UPLOAD_FOLDER = "static/uploads"
 @app.route("/admin_logout")
 def admin_logout():
@@ -530,7 +530,13 @@ def about():
 
 @app.route("/contact")
 def contact():
-    return render_template("contact.html")
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM emergency_contacts ORDER BY id ASC")
+    emergency_contacts = cursor.fetchall()
+    conn.close()
+    return render_template("contact.html", emergency_contacts=emergency_contacts)
 
 
 @app.route("/view/<int:id>")
@@ -605,6 +611,12 @@ def edit(id):
             admin_reply,
             id
         ))
+
+        cursor.execute("""
+            INSERT INTO complaint_timeline
+            (complaint_id, status, remarks, updated_by)
+            VALUES (?, ?, ?, ?)
+        """, (id, status, admin_reply, "Panchayat Admin"))
 
         conn.commit()
         # Save notification
@@ -899,10 +911,10 @@ def api_register():
     email = (data.get("email") or "").strip().lower()
     ward = (data.get("ward") or "").strip()
     password = data.get("password") or ""
-    confirm_password = data.get("confirm_password")
+    confirm_password = data.get("confirm_password") or ""
     if not all([fullname, mobile, email, ward, password]):
         return jsonify({"success": False, "message": "All fields are required"}), 400
-    if confirm_password is not None and password != confirm_password:
+    if password != confirm_password:
         return jsonify({"success": False, "message": "Passwords do not match"}), 400
     if len(password) < 8:
         return jsonify({"success": False, "message": "Password must be at least 8 characters"}), 400
@@ -922,75 +934,43 @@ def api_register():
 @app.route("/api/submit_complaint", methods=["POST"])
 def api_submit_complaint():
 
-    data = request.get_json() or {}
+    data = request.get_json()
 
-    name = (data.get("name") or "").strip()
-    mobile = (data.get("mobile") or "").strip()
-    ward = (data.get("ward") or "").strip()
-    category = (data.get("category") or "").strip()
-    description = (data.get("description") or "").strip()
+    name = data.get("name")
+    mobile = data.get("mobile")
+    ward = data.get("ward")
+    category = data.get("category")
+    description = data.get("description")
 
-    if not name or not mobile or not description:
-        return jsonify({
-            "success": False,
-            "message": "Name, mobile, and description are required."
-        }), 400
-
-    conn = wardshabdam.get_connection()
+    conn = sqlite3.connect("database/wardshabdam.db")
     cursor = conn.cursor()
-
-    cursor.execute("SELECT id, email FROM citizens WHERE mobile = ?", (mobile,))
-    citizen = cursor.fetchone()
-    citizen_id = citizen["id"] if citizen else None
 
     cursor.execute("""
         INSERT INTO complaints
-        (name, mobile, ward, category, description, status, citizen_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        (name, mobile, ward, category, description, status)
+        VALUES (?, ?, ?, ?, ?, ?)
     """, (
         name,
         mobile,
         ward,
         category,
         description,
-        "Pending",
-        citizen_id
+        "Pending"
     ))
-
-    conn.commit()
-    complaint_id = cursor.lastrowid
-    tracking_id = f"WS-2026-{complaint_id:06d}"
-
-    cursor.execute("""
-        UPDATE complaints
-        SET tracking_id=?
-        WHERE id=?
-    """, (tracking_id, complaint_id))
-
-    if citizen_id:
-        cursor.execute("""
-            INSERT INTO notifications (citizen_id, title, message)
-            VALUES (?, ?, ?)
-        """, (
-            citizen_id,
-            "Complaint Submitted",
-            f"Your complaint ({category}) has been submitted with tracking ID {tracking_id}."
-        ))
 
     conn.commit()
     conn.close()
 
     return jsonify({
         "success": True,
-        "message": "Complaint submitted successfully.",
-        "complaint_id": complaint_id,
-        "tracking_id": tracking_id
+        "message": "Complaint submitted successfully."
     })
 # ---------------- MY COMPLAINTS API ----------------
 
 @app.route('/api/my_complaints/<mobile>', methods=['GET'])
 def api_my_complaints(mobile):
-    conn = wardshabdam.get_connection()
+    conn = sqlite3.connect("database/wardshabdam.db")
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -999,11 +979,7 @@ def api_my_complaints(mobile):
             category,
             description,
             ward,
-            status,
-            photo,
-            tracking_id,
-            admin_reply,
-            created_at
+            status
         FROM complaints
         WHERE mobile = ?
         ORDER BY id DESC
@@ -1020,11 +996,7 @@ def api_my_complaints(mobile):
             "category": complaint["category"],
             "description": complaint["description"],
             "ward": complaint["ward"],
-            "status": complaint["status"],
-            "photo": complaint["photo"],
-            "tracking_id": complaint["tracking_id"],
-            "admin_reply": complaint["admin_reply"],
-            "created_at": str(complaint["created_at"]) if complaint["created_at"] else ""
+            "status": complaint["status"]
         })
 
     return jsonify(result)
@@ -1278,12 +1250,12 @@ def api_survey():
 def api_change_password():
     data = request.get_json() or {}
     mobile = data.get("mobile")
-    current_password = data.get("current_password") or data.get("old_password") or ""
+    current_password = data.get("current_password") or ""
     new_password = data.get("new_password") or ""
-    confirm_password = data.get("confirm_password")
+    confirm_password = data.get("confirm_password") or ""
     if not mobile or not current_password or not new_password:
         return jsonify({"success": False, "message": "All password fields are required"}), 400
-    if confirm_password is not None and new_password != confirm_password:
+    if new_password != confirm_password:
         return jsonify({"success": False, "message": "New passwords do not match"}), 400
     if len(new_password) < 8:
         return jsonify({"success": False, "message": "New password must be at least 8 characters"}), 400
@@ -1566,15 +1538,58 @@ def profile():
         "SELECT * FROM citizens WHERE id=?",
         (session["citizen_id"],)
     )
-
     citizen = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT * FROM family_members WHERE citizen_id=? ORDER BY id ASC",
+        (session["citizen_id"],)
+    )
+    family_members = cursor.fetchall()
 
     conn.close()
 
     return render_template(
         "profile.html",
-        citizen=citizen
+        citizen=citizen,
+        family_members=family_members
     )
+
+@app.route("/add_family_member", methods=["POST"])
+def add_family_member():
+    if "citizen_id" not in session:
+        return redirect("/login")
+
+    name = request.form.get("name", "").strip()
+    relationship = request.form.get("relationship", "").strip()
+    age = request.form.get("age", 0)
+    gender = request.form.get("gender", "").strip()
+    occupation = request.form.get("occupation", "").strip()
+
+    if name and relationship:
+        conn = sqlite3.connect("database/wardshabdam.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO family_members
+            (citizen_id, name, relationship, age, gender, occupation)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (session["citizen_id"], name, relationship, age, gender, occupation))
+        conn.commit()
+        conn.close()
+
+    return redirect("/profile")
+
+@app.route("/delete_family_member/<int:id>", methods=["POST", "GET"])
+def delete_family_member(id):
+    if "citizen_id" not in session:
+        return redirect("/login")
+
+    conn = sqlite3.connect("database/wardshabdam.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM family_members WHERE id=? AND citizen_id=?", (id, session["citizen_id"]))
+    conn.commit()
+    conn.close()
+
+    return redirect("/profile")
 @app.route("/change_password", methods=["GET", "POST"])
 def change_password():
 
@@ -1663,7 +1678,7 @@ def add_announcement():
         title = request.form["title"]
         description = request.form["description"]
 
-        photo = request.files.get("photo")
+        photo = request.files["photo"]
 
         filename = ""
 
@@ -1785,12 +1800,9 @@ def admin_login():
 @app.route("/create_admin_hash")
 def create_admin_hash():
 
-    if os.getenv("FLASK_DEBUG", "0") != "1":
-        return "Not available in production mode.", 403
-
     hashed = generate_password_hash("admin123")
 
-    conn = wardshabdam.get_connection()
+    conn = sqlite3.connect("database/wardshabdam.db")
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1826,7 +1838,7 @@ def add_program():
         title = request.form["title"]
         description = request.form["description"]
 
-        photo = request.files.get("photo")
+        photo = request.files["photo"]
 
         filename = ""
 
@@ -1950,8 +1962,15 @@ def my_complaint(id):
         "SELECT * FROM complaints WHERE id=?",
         (id,)
     )
-
     complaint = cursor.fetchone()
+
+    timeline_logs = []
+    if complaint:
+        cursor.execute(
+            "SELECT * FROM complaint_timeline WHERE complaint_id=? ORDER BY created_at ASC",
+            (id,)
+        )
+        timeline_logs = cursor.fetchall()
 
     conn.close()
 
@@ -1964,7 +1983,45 @@ def my_complaint(id):
 
     return render_template(
         "my_complaint.html",
-        complaint=complaint
+        complaint=complaint,
+        timeline_logs=timeline_logs
+    )
+
+@app.route("/track", methods=["GET", "POST"])
+def track():
+    complaint = None
+    timeline_logs = []
+    error = None
+    query = request.args.get("tracking_id", "").strip() or request.form.get("tracking_id", "").strip()
+
+    if query:
+        conn = sqlite3.connect("database/wardshabdam.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT * FROM complaints WHERE tracking_id=? OR id=?",
+            (query, query)
+        )
+        complaint = cursor.fetchone()
+
+        if complaint:
+            cursor.execute(
+                "SELECT * FROM complaint_timeline WHERE complaint_id=? ORDER BY created_at ASC",
+                (complaint["id"],)
+            )
+            timeline_logs = cursor.fetchall()
+        else:
+            error = f"നമ്പർ '{query}' ഉള്ള പരാതി കണ്ടെത്താനായില്ല. ദയവായി നമ്പർ ശരിയാണോ എന്ന് പരിശോധിക്കുക."
+
+        conn.close()
+
+    return render_template(
+        "track.html",
+        complaint=complaint,
+        timeline_logs=timeline_logs,
+        error=error,
+        query=query
     )
 
 @app.route("/edit_profile", methods=["GET", "POST"])
@@ -1981,15 +2038,21 @@ def edit_profile():
 
         fullname = request.form["fullname"]
         email = request.form["email"]
+        house_no = request.form.get("house_no", "").strip()
+        ration_card_no = request.form.get("ration_card_no", "").strip()
 
         cursor.execute("""
             UPDATE citizens
             SET fullname=?,
-                email=?
+                email=?,
+                house_no=?,
+                ration_card_no=?
             WHERE id=?
         """, (
             fullname,
             email,
+            house_no,
+            ration_card_no,
             session["citizen_id"]
         ))
 
@@ -2039,19 +2102,11 @@ def delete_program(id):
 @app.route("/test_email")
 def test_email():
 
-    check = admin_required()
-    if check:
-        return check
-
-    target_email = ADMIN_EMAIL or app.config["MAIL_USERNAME"]
-    if not target_email or "YOUR_PERSONAL_EMAIL" in target_email:
-        return "Admin email is not configured. Set WARD_SHABDAM_ADMIN_EMAIL first.", 400
-
     try:
         msg = Message(
             subject="Wardshabdam Test Email",
             sender=app.config["MAIL_USERNAME"],
-            recipients=[target_email]
+            recipients=["YOUR_PERSONAL_EMAIL@gmail.com"]  # Replace with your email
         )
 
         msg.body = """
@@ -2066,12 +2121,12 @@ Wardshabdam
 """
 
         if not send_configured_email(msg):
-            return "Email configuration is missing or incomplete. Set the Wardshabdam mail environment variables first.", 503
+            return "Email configuration is missing. Set the Wardshabdam mail environment variables first.", 503
 
-        return f"✅ Test email sent successfully to {target_email}!"
+        return "✅ Test email sent successfully!"
 
     except Exception as e:
-        return f"❌ Error sending test email: {e}", 500
+        return f"❌ Error: {e}"
     
 @app.route("/ward-members")
 def ward_members():
@@ -2107,44 +2162,29 @@ def add_ward_member():
         designation = request.form["designation"]
         phone = request.form["phone"]
         email = request.form["email"]
-        username = (request.form.get("username") or "").strip()
-        password = request.form.get("password") or ""
 
-        if not username or not password:
-            return "Username and password are required for ward member login.", 400
-
-        photo = request.files.get("photo")
+        photo = request.files["photo"]
 
         filename = ""
 
         if photo and photo.filename != "":
             filename = secure_filename(photo.filename)
             photo.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-
+        print("DB PATH =", os.path.abspath("database/wardshabdam.db"))
         conn = sqlite3.connect("database/wardshabdam.db")
         cursor = conn.cursor()
 
-        existing = cursor.execute(
-            "SELECT id FROM ward_members WHERE username=?",
-            (username,)
-        ).fetchone()
-        if existing:
-            conn.close()
-            return "Username already exists. Please choose another one.", 409
-
         cursor.execute("""
             INSERT INTO ward_members
-            (ward_no, name, designation, phone, email, photo, username, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (ward_no, name, designation, phone, email, photo)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (
             ward_no,
             name,
             designation,
             phone,
             email,
-            filename,
-            username,
-            generate_password_hash(password)
+            filename
         ))
 
         conn.commit()
@@ -2450,7 +2490,7 @@ def add_gallery():
         description = request.form["description"]
         event_date = request.form["event_date"]
 
-        photo = request.files.get("photo")
+        photo = request.files["photo"]
 
         filename = ""
 
@@ -2535,41 +2575,34 @@ def ward_login():
 
     if request.method == "POST":
 
-        username = (request.form.get("username") or "").strip()
-        password = request.form.get("password") or ""
+        username = request.form["username"]
+        password = request.form["password"]
 
         conn = sqlite3.connect("database/wardshabdam.db")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT * FROM ward_members WHERE username=?",
-            (username,)
-        )
+        print("Username entered:", username)
+        print("Password entered:", password)
+        cursor.execute("""
+            SELECT *
+            FROM ward_members
+            WHERE username=? AND password=?
+        """, (
+            username,
+            password
+        ))
 
         member = cursor.fetchone()
+
         conn.close()
 
         if member:
-            stored_password = member["password"] or ""
-            password_valid = False
-            if stored_password:
-                if stored_password.startswith(("scrypt:", "pbkdf2:", "argon2:")):
-                    password_valid = check_password_hash(stored_password, password)
-                else:
-                    password_valid = (stored_password == password)
-                    if password_valid:
-                        conn_up = wardshabdam.get_connection()
-                        conn_up.execute("UPDATE ward_members SET password=? WHERE id=?", (generate_password_hash(password), member["id"]))
-                        conn_up.commit()
-                        conn_up.close()
-            else:
-                password_valid = False
 
-        if member and password_valid:
             session["ward_member_id"] = member["id"]
             session["ward_name"] = member["name"]
             session["ward_no"] = member["ward_no"]
+
             return redirect("/ward-dashboard")
 
         return """
@@ -2722,6 +2755,12 @@ def ward_edit(id):
             id
         ))
 
+        cursor.execute("""
+            INSERT INTO complaint_timeline
+            (complaint_id, status, remarks, updated_by)
+            VALUES (?, ?, ?, ?)
+        """, (id, status, reply, f"Ward {session.get('ward_no', '')} Member"))
+
         conn.commit()
         # Save notification
 
@@ -2806,7 +2845,7 @@ def add_download():
         category = request.form["category"]
         description = request.form["description"]
 
-        pdf = request.files.get("pdf")
+        pdf = request.files["pdf"]
 
         filename = ""
 
@@ -3007,7 +3046,7 @@ def add_circular():
 
         important = 1 if "important" in request.form else 0
 
-        pdf = request.files.get("pdf")
+        pdf = request.files["pdf"]
 
         filename = ""
 

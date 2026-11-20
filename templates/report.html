@@ -1,105 +1,72 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Report an Issue
+Report an Issue | Wardshabdam
 {% endblock %}
 
 {% block content %}
 
-<section class="report-section">
+<div class="form-card" style="max-width: 680px; margin: 30px auto; padding: 32px 28px; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-md);">
 
-    <div class="report-container">
-
-        <h2>Report an Issue</h2>
-
-        <p>പരാതി രജിസ്റ്റർ ചെയ്യുക</p>
-
-        <form action="/report" method="POST" enctype="multipart/form-data">
-
-            <div class="form-group">
-
-                <label>Full Name</label>
-
-                    <input
-                    type="text"
-                    name="name"
-                    value="{{ citizen.fullname }}"
-                    readonly>
-            </div>
-
-            <div class="form-group">
-
-               <label>Mobile Number</label>
-
-                    <input
-                    type="text"
-                    name="mobile"
-                    value="{{ citizen.mobile }}"
-                    readonly>
-            </div>
-
-            <div class="form-group">
-
-                <label>Ward Number</label>
-
-               <label>Ward</label>
-
-                <input
-                    type="text"
-                    name="ward"
-                    value="{{ citizen.ward }}"
-                    readonly>
-            </div>
-
-            <div class="form-group">
-
-                <label>Category</label>
-
-                <select name="category" required>
-
-                    <option>Select Category</option>
-
-                    <option>Road Issues</option>
-                    <option>Water Supply</option>
-                    <option>Street Lights</option>
-                    <option>Waste Management</option>
-                    <option>Health</option>
-                    <option>Environment</option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                 <label>Description</label>
-
-                <textarea
-                     name="description"
-                    rows="5"
-                    placeholder="Describe the issue"
-                    required></textarea>
-                
-            </div>
-
-            <div class="form-group">
-
-                <label>Upload Photo</label>
-
-                <input type="file" name="photo">
-
-            </div>
-
-            <button class="submit-btn">
-
-                Submit Complaint
-
-            </button>
-
-        </form>
-
+    <div style="text-align: center; margin-bottom: 28px;">
+        <div style="width: 56px; height: 56px; border-radius: var(--radius-full); background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 12px;">
+            <i class="fa-solid fa-bullhorn"></i>
+        </div>
+        <h2 style="font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">പരാതി സമർപ്പിക്കുക</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Report an Issue or Public Grievance</p>
     </div>
 
-</section>
+    <form action="/report" method="POST" enctype="multipart/form-data">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label><i class="fa-solid fa-user" style="color: var(--brand-primary); margin-right: 6px;"></i> പേര് / Full Name</label>
+                <input type="text" name="name" value="{{ citizen.fullname }}" readonly style="background: var(--bg-surface-subtle); color: var(--text-secondary); cursor: not-allowed;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label><i class="fa-solid fa-phone" style="color: var(--brand-primary); margin-right: 6px;"></i> ഫോൺ / Mobile</label>
+                <input type="text" name="mobile" value="{{ citizen.mobile }}" readonly style="background: var(--bg-surface-subtle); color: var(--text-secondary); cursor: not-allowed;">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fa-solid fa-location-dot" style="color: var(--brand-accent); margin-right: 6px;"></i> വാർഡ് നമ്പർ / Ward Number</label>
+            <input type="text" name="ward" value="{{ citizen.ward }}" readonly style="background: var(--bg-surface-subtle); color: var(--text-secondary); cursor: not-allowed;">
+        </div>
+
+        <div class="form-group">
+            <label><i class="fa-solid fa-layer-group" style="color: var(--brand-primary); margin-right: 6px;"></i> പ്രശ്ന വിഭാഗം / Category <span style="color: #DC2626;">*</span></label>
+            <select name="category" required style="cursor: pointer;">
+                <option value="" disabled selected>വിഭാഗം തിരഞ്ഞെടുക്കുക / Select Category</option>
+                <option value="Road Issues">റോഡ് പ്രശ്നങ്ങൾ (Road Issues)</option>
+                <option value="Water Supply">കുടിവെള്ള വിതരണം (Drinking Water Supply)</option>
+                <option value="Street Lights">തെരുവ് വിളക്കുകൾ (Street Lights)</option>
+                <option value="Waste Management">മാലിന്യ സംസ്കരണം (Waste Management)</option>
+                <option value="Drainage & Sanitation">ഡ്രെയിനേജ് & ശുചിത്വം (Drainage & Sanitation)</option>
+                <option value="Health">ആരോഗ്യം & പ്രതിരോധം (Health & Hygiene)</option>
+                <option value="Environment">പരിസ്ഥിതി & കൃഷി (Environment / Agriculture)</option>
+                <option value="Others">മറ്റുള്ളവ (Other Public Issues)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fa-solid fa-align-left" style="color: var(--brand-primary); margin-right: 6px;"></i> പരാതി വിവരണം / Issue Description <span style="color: #DC2626;">*</span></label>
+            <textarea name="description" rows="5" placeholder="പ്രശ്നത്തിന്റെ കൃത്യമായ സ്ഥലം, ലാൻഡ്മാർക്ക്, വിശദാംശങ്ങൾ രേഖപ്പെടുത്തുക..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fa-solid fa-camera" style="color: var(--brand-primary); margin-right: 6px;"></i> ഫോട്ടോ അറ്റാച്ച് ചെയ്യുക / Upload Photo (Optional)</label>
+            <input type="file" name="photo" accept="image/*" style="padding: 10px; background: var(--bg-surface-subtle); border-style: dashed;">
+            <small style="color: var(--text-muted); font-size: 12px; display: block; margin-top: 4px;">JPG, PNG അല്ലെങ്കിൽ WebP ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യാം (പരമാവധി 10MB).</small>
+        </div>
+
+        <button type="submit" class="submit-btn" style="width: 100%; padding: 14px; background: var(--brand-primary); color: #FFFFFF; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 700; cursor: pointer; transition: all var(--transition-fast); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fa-solid fa-paper-plane"></i> പരാതി സമർപ്പിക്കുക / Submit Complaint
+        </button>
+
+    </form>
+
+</div>
 
 {% endblock %}

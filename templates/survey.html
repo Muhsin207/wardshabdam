@@ -1,48 +1,70 @@
 {% extends "layout.html" %}
 
-{% block title %}Survey{% endblock %}
+{% block title %}
+Public Survey | Wardshabdam
+{% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div style="max-width: 760px; margin: 40px auto 70px; padding: 0 20px;">
 
-    <div class="card shadow p-4">
+    <div style="text-align: center; margin-bottom: 28px;">
+        <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: #FFFBEB; color: #D97706; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 12px; border: 1.5px solid #FDE68A;">
+            <i class="fa-solid fa-square-poll-vertical"></i>
+        </div>
+        <h1 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">
+            പൊതുജന സർവേ & അഭിപ്രായ വോട്ടെടുപ്പ്
+        </h1>
+        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">
+            Public Civic Survey & Community Opinion Poll
+        </p>
+    </div>
 
-        <h2 class="text-center text-success mb-4">
-            Public Survey
-        </h2>
+    {% if survey %}
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 32px; box-shadow: var(--shadow-md);">
+
+        <div style="margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border-light);">
+            <span class="tracking-pill" style="margin-bottom: 10px; display: inline-block;">
+                ACTIVE SURVEY
+            </span>
+            <h2 style="font-size: 20px; font-weight: 800; color: var(--text-primary); line-height: 1.5; margin: 0;">
+                {{ survey.question }}
+            </h2>
+        </div>
 
         <form method="POST">
 
-            <h4>{{ survey.question }}</h4>
-
-            <hr>
-
-            {% for option in options %}
-
-            <div class="form-check mb-3">
-
-                <input class="form-check-input"
-                       type="radio"
-                       name="option_id"
-                       value="{{ option.id }}"
-                       required>
-
-                <label class="form-check-label">
-                    {{ option.option_text }}
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
+                {% for option in options %}
+                <label style="display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border-light); background: var(--bg-surface-subtle); cursor: pointer; transition: all var(--transition-fast);">
+                    <input type="radio" name="option_id" value="{{ option.id }}" required style="width: 18px; height: 18px; accent-color: var(--brand-primary); cursor: pointer;">
+                    <span style="font-size: 15px; font-weight: 600; color: var(--text-primary);">
+                        {{ option.option_text }}
+                    </span>
                 </label>
-
+                {% endfor %}
             </div>
 
-            {% endfor %}
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                <a href="/survey_results" style="font-size: 14px; font-weight: 700; color: var(--brand-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-chart-simple"></i> ഫലങ്ങൾ കാണുക / View Results
+                </a>
 
-            <button class="btn btn-success">
-                Vote
-            </button>
+                <button type="submit" class="call-btn" style="border: none; cursor: pointer; padding: 12px 28px; border-radius: var(--radius-md); font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-check-to-slot"></i> വോട്ട് രേഖപ്പെടുത്തുക / Submit Vote
+                </button>
+            </div>
 
         </form>
 
     </div>
+    {% else %}
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 50px 20px; text-align: center;">
+        <i class="fa-regular fa-folder-open" style="font-size: 44px; color: var(--text-light); margin-bottom: 14px; display: block;"></i>
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary);">നിലവിൽ സജീവമായ സർവേകളില്ല</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">No active public surveys at the moment.</p>
+    </div>
+    {% endif %}
 
 </div>
 

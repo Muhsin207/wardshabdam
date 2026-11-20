@@ -1,35 +1,17 @@
 # Python generated files
 __pycache__/
 *.py[cod]
-*$py.class
 
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
-# Local database and data exports
-database/*.db
-database/ward.json
-*.db
-*.sqlite
-*.sqlite3
-
-# Local runtime & secret files
+# Local runtime files
 .env
 .env.*
 instance/*
 
-# Generated reports and uploads (keep directory structures)
-static/reports/*
-!static/reports/.gitkeep
+# Generated reports and uploads
+static/reports/*.pdf
 static/uploads/*
-!static/uploads/.gitkeep
-static/documents/*
-!static/documents/.gitkeep
 
-# Flutter and Android build files
+# Flutter generated files
 ward_shabdam_app/.dart_tool/
 ward_shabdam_app/build/
 ward_shabdam_app/.flutter-plugins
@@ -38,13 +20,4 @@ ward_shabdam_app/android/.gradle/
 ward_shabdam_app/android/local.properties
 ward_shabdam_app/android/key.properties
 ward_shabdam_app/android/*.jks
-ward_shabdam_app/android/*.invalid
 ward_shabdam_app/android/*.keystore
-
-# Editor & OS files
-.vscode/
-.idea/
-*.swp
-*.swo
-.DS_Store
-Thumbs.db

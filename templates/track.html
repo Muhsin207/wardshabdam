@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Track Complaint Status | Wardshabdam
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 860px; margin: 30px auto 60px; padding: 0 20px;">
+
+    <!-- Tracker Banner -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: var(--radius-full); background: var(--brand-primary-light); color: var(--brand-primary); font-size: 26px; margin-bottom: 12px;">
+            <i class="fa-solid fa-magnifying-glass-location"></i>
+        </div>
+        <h1 style="font-size: 28px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
+            പരാതി തത്സമയ ട്രാക്കിംഗ് / Track Complaint
+        </h1>
+        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">
+            പരാതി നമ്പർ (Complaint ID) നൽകി തത്സമയ പുരോഗതി പരിശോധിക്കാം
+        </p>
+    </div>
+
+    <!-- Search Box Card -->
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: 30px;">
+        <form action="/track" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+                <input type="text" name="tracking_id" value="{{ query or '' }}" placeholder="Enter Tracking ID or Complaint ID (e.g. 1, 2...)" required style="width: 100%; padding: 14px 18px; border-radius: var(--radius-md); border: 1.5px solid var(--border-light); font-size: 15px;">
+            </div>
+            <button type="submit" class="call-btn" style="border: none; cursor: pointer; padding: 14px 28px; border-radius: var(--radius-md); font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-search"></i> പരിശോധിക്കുക / Track
+            </button>
+        </form>
+
+        {% if error %}
+        <div style="margin-top: 18px; padding: 12px 16px; background: #FFF1F2; border: 1px solid #FECDD3; border-radius: var(--radius-sm); color: #BE123C; font-size: 14px;">
+            <i class="fa-solid fa-circle-exclamation me-1"></i> {{ error }}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if complaint %}
+    <!-- Complaint Result -->
+    <div style="background: #FFFFFF; border-radius: var(--radius-lg); border: 1px solid var(--border-light); padding: 28px; box-shadow: var(--shadow-md);">
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-light);">
+            <div>
+                <span class="tracking-pill" style="margin-bottom: 8px; display: inline-block;">
+                    ID: #{{ complaint.tracking_id if complaint.tracking_id else complaint.id }}
+                </span>
+                <h2 style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin: 4px 0 0;">
+                    {{ complaint.category }}
+                </h2>
+                <small style="color: var(--text-muted);">വാർഡ് / Ward: <strong>{{ complaint.ward }}</strong> • തീയതി: {{ complaint.created_at }}</small>
+            </div>
+
+            {% if complaint.status == "Pending" %}
+                <span class="badge badge-pending">
+                    <i class="fa-solid fa-clock"></i> Pending (തീർപ്പാക്കാനുള്ളത്)
+                </span>
+            {% elif complaint.status == "In Progress" %}
+                <span class="badge badge-progress">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> In Progress (നടപടിയിൽ)
+                </span>
+            {% else %}
+                <span class="badge badge-resolved">
+                    <i class="fa-solid fa-circle-check"></i> Resolved (പരിഹരിച്ചത്)
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Stepper -->
+        <div class="stepper-timeline {% if complaint.status == 'Resolved' %}progress-4{% elif complaint.status == 'In Progress' %}progress-2{% else %}progress-1{% endif %}">
+            <div class="step-node completed">
+                <div class="step-dot"><i class="fa-solid fa-check"></i></div>
+                <div class="step-title">Submitted</div>
+                <div class="step-desc">പരാതി ലഭിച്ചു</div>
+            </div>
+
+            <div class="step-node {% if complaint.status in ['In Progress', 'Resolved'] %}completed{% else %}active{% endif %}">
+                <div class="step-dot">
+                    {% if complaint.status in ['In Progress', 'Resolved'] %}
+                    <i class="fa-solid fa-check"></i>
+                    {% else %}
+                    <i class="fa-solid fa-user-check"></i>
+                    {% endif %}
+                </div>
+                <div class="step-title">Ward Assigned</div>
+                <div class="step-desc">വാർഡ് {{ complaint.ward }}</div>
+            </div>
+
+            <div class="step-node {% if complaint.status == 'Resolved' %}completed{% elif complaint.status == 'In Progress' %}active{% else %}pending{% endif %}">
+                <div class="step-dot">
+                    {% if complaint.status == 'Resolved' %}
+                    <i class="fa-solid fa-check"></i>
+                    {% elif complaint.status == 'In Progress' %}
+                    <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+                    {% else %}
+                    <i class="fa-solid fa-hammer"></i>
+                    {% endif %}
+                </div>
+                <div class="step-title">In Progress</div>
+                <div class="step-desc">നടപടിയിൽ</div>
+            </div>
+
+            <div class="step-node {% if complaint.status == 'Resolved' %}completed{% else %}pending{% endif %}">
+                <div class="step-dot">
+                    {% if complaint.status == 'Resolved' %}
+                    <i class="fa-solid fa-circle-check"></i>
+                    {% else %}
+                    <i class="fa-solid fa-flag-checkered"></i>
+                    {% endif %}
+                </div>
+                <div class="step-title">Resolved</div>
+                <div class="step-desc">തീർപ്പാക്കി</div>
+            </div>
+        </div>
+
+        <!-- Issue Description -->
+        <div style="background: var(--bg-surface-subtle); padding: 18px; border-radius: var(--radius-md); margin-bottom: 20px;">
+            <strong style="display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">പരാതി വിവരണം / DESCRIPTION:</strong>
+            <p style="margin: 0; color: var(--text-primary); font-size: 14px; line-height: 1.6;">{{ complaint.description }}</p>
+        </div>
+
+        <!-- Official Remark -->
+        {% if complaint.admin_reply %}
+        <div style="background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); padding: 18px; border-radius: var(--radius-md); border: 1px solid #BBF7D0; margin-bottom: 20px;">
+            <strong style="display: block; font-size: 13px; color: #166534; margin-bottom: 6px;">
+                <i class="fa-solid fa-comments me-1"></i> പഞ്ചായത്ത് / വാർഡ് മറുപടി (OFFICIAL REMARK):
+            </strong>
+            <p style="margin: 0; color: #14532D; font-size: 14px; font-weight: 500;">{{ complaint.admin_reply }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Timeline Log History -->
+        {% if timeline_logs %}
+        <div style="margin-top: 24px; border-top: 1px solid var(--border-light); padding-top: 20px;">
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px;">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> നടപടി ചരിത്രം / Activity Log
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                {% for log in timeline_logs %}
+                <div style="display: flex; gap: 14px; padding: 10px 14px; background: var(--bg-surface-subtle); border-radius: var(--radius-sm); font-size: 13px;">
+                    <span style="color: var(--brand-primary); font-weight: 700;">{{ log.status }}</span>
+                    <span style="color: var(--text-muted);">{{ log.remarks or "Status updated" }}</span>
+                    <span style="margin-left: auto; color: var(--text-light); font-size: 11px;">{{ log.created_at }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
